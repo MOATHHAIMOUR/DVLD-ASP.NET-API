@@ -7,8 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DVLD.Application\DVLD.Application.csproj" />
+    <ProjectReference Include="..\DVLD.Infrastructure\DVLD.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

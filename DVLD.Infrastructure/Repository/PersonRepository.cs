@@ -1,5 +1,4 @@
 ﻿using DVLD.Domain.Entites;
-using DVLD.Domain.Enums;
 using DVLD.Domain.IRepository;
 using Microsoft.Data.SqlClient;
 using System.Data;
@@ -24,7 +23,7 @@ namespace DVLD.Infrastructure.Repository
 
             using (var connection = new SqlConnection(DbSettings._connectionString))
             {
-                using (var command = new SqlCommand("GetAllPersons", connection))
+                using (var command = new SqlCommand("SP_GetAllPersons", connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
                    

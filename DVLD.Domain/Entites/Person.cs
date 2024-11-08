@@ -1,6 +1,4 @@
-﻿using DVLD.Domain.Enums;
-
-namespace DVLD.Domain.Entites
+﻿namespace DVLD.Domain.Entites
 {
     public class Person
     {

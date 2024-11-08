@@ -2,6 +2,6 @@
 {
     public class DbSettings
     {
-        public static readonly string _connectionString = "Server=.;Database=EcommerceApp;TrustServerCertificate=True;User Id=sa;Password=Yosef2016@";   
+        public static readonly string _connectionString = "Server=.;Database=DVLD;TrustServerCertificate=True;User Id=sa;Password=Yosef2016@";   
     }
 }
