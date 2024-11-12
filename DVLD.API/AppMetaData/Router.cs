@@ -18,7 +18,10 @@
         {
             public const string prefix = Rule + "Person";
 
-            public const string GetPeople = prefix + "/" + "GetAllProducts";
+            public const string GetPeople = prefix + "/" + "GetPeople";
+
+            public const string DeletePerson = prefix + "/" + "DeletePerson/{PersonId}";
+
         }
     }
 }

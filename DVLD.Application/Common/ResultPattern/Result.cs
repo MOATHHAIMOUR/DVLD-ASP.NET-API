@@ -19,7 +19,7 @@ namespace DVLD.Application.Common.ResultPattern
         {
             Value = value;
             Error = Error.None;
-            IsSuccess = false;
+            IsSuccess = true;
         }
 
         public static Result<T> Success(T value) => new(value);

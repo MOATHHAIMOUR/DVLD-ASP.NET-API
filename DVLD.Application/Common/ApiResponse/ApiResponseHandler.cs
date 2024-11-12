@@ -5,13 +5,13 @@ namespace DVLD.Application.Common.ApiResponse
     public static class ApiResponseHandler
     {
         // Generates a response for a successful deletion
-        public static ApiResponse<T> Deleted<T>(string message = "Deleted Successfully")
+        public static ApiResponse<T> Deleted<T>(string? message)
         {
             return new ApiResponse<T>()
             {
                 StatusCode = HttpStatusCode.OK,
                 Succeeded = true,
-                Message = message
+                Message = string.IsNullOrEmpty(message) ? "Deleted Successfully" : message
             };
         }
 
@@ -68,13 +68,13 @@ namespace DVLD.Application.Common.ApiResponse
 
 
         // Generates a not found response
-        public static ApiResponse<T> NotFound<T>(string message = "Not Found")
+        public static ApiResponse<T> NotFound<T>(string? message)
         {
             return new ApiResponse<T>()
             {
                 StatusCode = HttpStatusCode.NotFound,
                 Succeeded = false,
-                Message = message
+                Message = string.IsNullOrEmpty(message) ? "Not Found" : message
             };
         }
 

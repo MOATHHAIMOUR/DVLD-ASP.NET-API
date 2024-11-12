@@ -1,13 +1,25 @@
 ﻿using DVLD.Domain.Entites;
+using DVLD.Domain.Enums;
+using DVLD.Domain.views;
 
 namespace DVLD.Domain.IRepository
 {
     public interface IPersonRepository
     {
-        Task<List<Person>> GetAllAsync();
+        Task<List<PeopleView>> GetPeopleViewAsync(int? PersonId = null,
+            string? NationalNo = null,
+            string? FirstName = null,
+            string? SecondName = null,
+            string? ThirdName = null,
+            string? LastName = null,
+            EnumGender? Gender = null,
+            string? Phone = null,
+            string? Email = null,
+            string? CountryName = null);
+
         Task<Person> GetByIdAsync(int id);
         Task AddAsync(Person person);
         Task UpdateAsync(Person person);
-        Task DeleteAsync(int id);
+        Task<bool> DeleteAsync(int personId);
     }
 }

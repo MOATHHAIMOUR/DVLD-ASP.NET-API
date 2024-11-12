@@ -10,6 +10,11 @@
         private readonly string _code;
         private readonly string _message;
 
+        public string Message { get { return _message; } }
+        public string Code { get { return _code; } }
+
+
+
         public Error(string code, string message)
         {
             _code = code;

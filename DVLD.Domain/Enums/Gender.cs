@@ -1,8 +1,8 @@
 ﻿namespace DVLD.Domain.Enums
 {
-    public enum Gender
+    public enum EnumGender
     {
-        Male = 0,
-        Female=1
+        Male = 'M',
+        Female= 'F',
     }
 }
