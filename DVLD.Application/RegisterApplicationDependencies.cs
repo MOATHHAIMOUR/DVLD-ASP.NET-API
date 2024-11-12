@@ -20,6 +20,8 @@ namespace DVLD.Application
 
 
             services.AddScoped<IPersonServices, PersonServices>();
+            services.AddScoped<ISharedServices, SharedServices>();
+
 
             return services;
         }

@@ -23,5 +23,15 @@
             public const string DeletePerson = prefix + "/" + "DeletePerson/{PersonId}";
 
         }
+
+
+
+        public static class SharedRouting
+        {
+
+            public const string GetAllCountries = Rule + "GetAllCountries";
+
+
+        }
     }
 }

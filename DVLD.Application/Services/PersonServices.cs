@@ -1,4 +1,5 @@
 ﻿using DVLD.Application.Common.Errors;
+using DVLD.Application.Common.Errors;
 using DVLD.Application.Common.ResultPattern;
 using DVLD.Application.Services.IServices;
 using DVLD.Domain.Enums;
@@ -42,6 +43,20 @@ namespace DVLD.Application.Services
                       ));
         }
 
-       
+        public async Task<Result<List<PeopleView>>> GetAllPeopleViewAsync(int? PersonId = null, string? NationalNo = null, string? FirstName = null, string? SecondName = null, string? ThirdName = null, string? LastName = null, EnumGender? Gender = null, string? Phone = null, string? Email = null, string? CountryName = null, int? PageNumber = null, int? PageSize = null, EnumSortDirection? sortDirection = EnumSortDirection.ASC)
+        {
+            return Result<List<PeopleView>>.Success(await _personRepository.GetPeopleViewAsync(
+                                      PersonId,
+                                      NationalNo,
+                                      FirstName,
+                                      SecondName,
+                                      ThirdName,
+                                      LastName,
+                                      Gender,
+                                      Phone,
+                                      Email,
+                                      CountryName
+                                  ));
+        }
     }
 }

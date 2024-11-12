@@ -20,7 +20,8 @@ namespace DVLD.Application.Services.IServices
             string? Email = null,
             string? CountryName = null,
             int? PageNumber = null,
-            int? PageSize = null);
+            int? PageSize = null,
+            EnumSortDirection? sortDirection=EnumSortDirection.ASC);
         public Task<Result<string>> DeletePersonById(int PersonID);
 
 

@@ -27,10 +27,11 @@ namespace DVLD.API.Controllers
             return  NewResult(response);
         }
 
+
         [HttpDelete(Router.PersonRouting.DeletePerson)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeletePerson([FromRoute]int PersonId)
+        public async Task<IActionResult> DeletePerson([FromRoute] int PersonId)
         {
             var response = await _mediator.Send(new DeletePersonCommand(PersonId));
 
@@ -39,8 +40,9 @@ namespace DVLD.API.Controllers
 
 
 
+
     }
 
 
-     
+
 }

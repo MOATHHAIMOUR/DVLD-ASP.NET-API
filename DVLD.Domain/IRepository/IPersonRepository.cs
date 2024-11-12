@@ -15,7 +15,11 @@ namespace DVLD.Domain.IRepository
             EnumGender? Gender = null,
             string? Phone = null,
             string? Email = null,
-            string? CountryName = null);
+            string? CountryName = null,
+            int PageNumber = 1,
+            int pageSize =5,
+            string? SortBy = null,
+            EnumSortDirection sortDirection = EnumSortDirection.ASC);
 
         Task<Person> GetByIdAsync(int id);
         Task AddAsync(Person person);

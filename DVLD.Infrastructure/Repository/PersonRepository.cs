@@ -51,7 +51,9 @@ namespace DVLD.Infrastructure.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<List<PeopleView>> GetPeopleViewAsync(int? PersonId = null, string? NationalNo = null, string? FirstName = null, string? SecondName = null, string? ThirdName = null, string? LastName = null, EnumGender? Gender = null, string? Phone = null, string? Email = null, string? CountryName = null)
+     
+
+        public async Task<List<PeopleView>> GetPeopleViewAsync(int? PersonId = null, string? NationalNo = null, string? FirstName = null, string? SecondName = null, string? ThirdName = null, string? LastName = null, EnumGender? Gender = null, string? Phone = null, string? Email = null, string? CountryName = null, int PageNumber = 1, int pageSize = 5, string? SortBy = null, EnumSortDirection sortDirection = EnumSortDirection.ASC)
         {
             List<PeopleView> persons = [];
 
@@ -66,10 +68,14 @@ namespace DVLD.Infrastructure.Repository
                     cmd.Parameters.AddWithValue("@SecondName", SecondName ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@ThirdName", ThirdName ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@LastName", LastName ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Gender", (Gender==null) ? DBNull.Value : (Gender == EnumGender.Male ? "M" : "F"));
+                    cmd.Parameters.AddWithValue("@Gender", (Gender == null) ? DBNull.Value : (Gender == EnumGender.Male ? "M" : "F"));
                     cmd.Parameters.AddWithValue("@Phone", Phone ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Email", Email ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@CountryName", CountryName ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@PageSize", pageSize);
+                    cmd.Parameters.AddWithValue("@PageNumber", PageNumber);
+                    cmd.Parameters.AddWithValue("@orderBy",SortBy ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@orderDirection", sortDirection == EnumSortDirection.ASC? "ASC":"DESC");
 
                     await connection.OpenAsync();
 
@@ -87,7 +93,7 @@ namespace DVLD.Infrastructure.Repository
                                 ThirdName = reader.IsDBNull(reader.GetOrdinal("ThirdName")) ? null : (string)reader["ThirdName"],
                                 LastName = reader.GetString(reader.GetOrdinal("LastName")),
                                 DateOfBirth = reader.GetDateTime(reader.GetOrdinal("DateOfBirth")),
-                                Gender = (reader.GetString(reader.GetOrdinal("Gender"))[0])=='M'?EnumGender.Male:EnumGender.Female,
+                                Gender = (reader.GetString(reader.GetOrdinal("Gender"))[0]) == 'M' ? EnumGender.Male : EnumGender.Female,
                                 Address = reader.GetString(reader.GetOrdinal("Address")),
                                 Phone = reader.GetString(reader.GetOrdinal("Phone")),
                                 Email = reader.GetString(reader.GetOrdinal("Email")),
@@ -101,7 +107,9 @@ namespace DVLD.Infrastructure.Repository
                 }
             }
 
-            return persons;
+            return persons; throw new NotImplementedException();
         }
+
+
     }
 }   
