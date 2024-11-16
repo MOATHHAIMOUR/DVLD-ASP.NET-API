@@ -16,7 +16,7 @@ namespace DVLD.Domain.Entites
         public required int CountryId { get; set; }       // Foreign Key to Country
         public required string Address { set; get; }
         public required DateTime DateOfBirth { set; get; }
-        public byte[]? Image { get; set; }        // Image
+        public byte[]? ImageBytes { get; set; }        // Image
 
         // Navigation property for the relationship with Country
         public Country? Country { get; set; }

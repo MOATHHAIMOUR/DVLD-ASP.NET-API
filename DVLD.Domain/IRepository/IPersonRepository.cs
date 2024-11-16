@@ -6,7 +6,8 @@ namespace DVLD.Domain.IRepository
 {
     public interface IPersonRepository
     {
-        Task<List<PeopleView>> GetPeopleViewAsync(int? PersonId = null,
+        Task<List<PeopleView>> GetPeopleViewAsync(
+            int? PersonId = null,
             string? NationalNo = null,
             string? FirstName = null,
             string? SecondName = null,
@@ -21,9 +22,12 @@ namespace DVLD.Domain.IRepository
             string? SortBy = null,
             EnumSortDirection sortDirection = EnumSortDirection.ASC);
 
-        Task<Person> GetByIdAsync(int id);
-        Task AddAsync(Person person);
-        Task UpdateAsync(Person person);
-        Task<bool> DeleteAsync(int personId);
+        Task<Person?> GetPersonByIdOrNationalNo(int? personId, string? nationalNo);
+
+        Task<int> AddPersonAsycn(Person person);
+        Task<bool> UpdatePersonAsycn(Person person);
+
+        
+        Task<bool> DeletePersonAsync(int personId);
     }
 }

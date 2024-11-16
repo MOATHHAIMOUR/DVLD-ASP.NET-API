@@ -1,8 +1,6 @@
-﻿using DVLD.Domain.Enums;
-
-namespace DVLD.Application.DTO.People
+﻿namespace DVLD.Application.DTO.People
 {
-    public class PeopleSearchParams
+    public class PeopleSearchParamsDTO
     {
         public int? PersonId { get; set; }
         public string? NationalNo { get; set; }
@@ -14,12 +12,11 @@ namespace DVLD.Application.DTO.People
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public string? CountryName { get; set; }
-        public int? PageNumber { get; set; }
-        public int? PageSize { get; set; }
+        public int? PageNumber { get; set; } = 1;
+        public int? PageSize { get; set; } = 10; 
         public string? SortBy { get; set; }
-        public string? SortDirection { get; set; }
+        public string? SortDirection { get; set; } = "ASC";
 
-        
-
+      
     }
 }

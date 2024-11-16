@@ -15,10 +15,14 @@ namespace DVLD.Application
             // Add MediaR in DI contianer
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
 
+            // Add Fluent Validation in DI contianer
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
+            // Add Auto Mapper in DI contianer
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
+            // Add All  DI contianer
             services.AddScoped<IPersonServices, PersonServices>();
             services.AddScoped<ISharedServices, SharedServices>();
 

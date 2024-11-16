@@ -1,12 +1,8 @@
 ﻿using DVLD.Application.Common.ApiResponse;
-using DVLD.Application.Common.Helpers;
 using DVLD.Application.Services.IServices;
-using DVLD.Domain.Entites;
 using DVLD.Domain.Enums;
 using DVLD.Domain.views;
 using MediatR;
-using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace DVLD.Application.Features.PersonFeature.Queries.GetAllPersons
 {
@@ -27,7 +23,7 @@ namespace DVLD.Application.Features.PersonFeature.Queries.GetAllPersons
                 : Enum.Parse<EnumGender>(request.PeopleSearchParams.Gender);
 
             // Since OrderDirection is validated, assume it's "ASC" or "DESC" if not null.
-            EnumSortDirection? sortDirection = string.IsNullOrEmpty(request.PeopleSearchParams.SortDirection) ?
+            EnumSortDirection sortDirection = string.IsNullOrEmpty(request.PeopleSearchParams.SortDirection) ?
                 EnumSortDirection.ASC :
                 Enum.Parse<EnumSortDirection>(request.PeopleSearchParams.SortDirection);
 
@@ -41,8 +37,11 @@ namespace DVLD.Application.Features.PersonFeature.Queries.GetAllPersons
                 gender,
                 request.PeopleSearchParams.Phone,
                 request.PeopleSearchParams.Email,
-                request.PeopleSearchParams.CountryName
-             
+                request.PeopleSearchParams.CountryName,
+                request.PeopleSearchParams.SortBy,
+                request.PeopleSearchParams.PageNumber??0,
+                request.PeopleSearchParams.PageSize??10,
+                sortDirection
                 )).Value;
 
             return ApiResponseHandler.Success(peopel ?? [], meta: new

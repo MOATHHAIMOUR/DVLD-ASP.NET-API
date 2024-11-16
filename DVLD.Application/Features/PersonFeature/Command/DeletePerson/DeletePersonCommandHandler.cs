@@ -15,7 +15,7 @@ namespace DVLD.Application.Features.PersonFeature.Command.DeletePerson
 
         public async Task<ApiResponse<string>> Handle(DeletePersonCommand request, CancellationToken cancellationToken)
         {
-           var result =  await _personServices.DeletePersonById(request.PersonId);
+           var result =  await _personServices.DeletePersonByIdAsync(request.PersonId);
 
             if (result.IsSuccess)
             {

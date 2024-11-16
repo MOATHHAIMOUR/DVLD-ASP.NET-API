@@ -35,7 +35,7 @@ public class GetPeopleQueryValidator : AbstractValidator<GetAllPersonsQuery>
         // Gender: Optional, but if present, must be 'M' or 'F'
         RuleFor(x => x.PeopleSearchParams.Gender)
             .Must(g => g == "Male" || g == "Female")
-            .When(x =>string.IsNullOrEmpty(x.PeopleSearchParams.Gender))
+            .When(x => !string.IsNullOrEmpty(x.PeopleSearchParams.Gender))
             .WithMessage("Gender must be 'Male' or 'Female'.");
 
         // Phone: Optional, max length 15, validate format if required
@@ -84,10 +84,23 @@ public class GetPeopleQueryValidator : AbstractValidator<GetAllPersonsQuery>
 
     private bool IsValidProperty(string? orderBy)
     {
-        
-        // Define a list of valid property names
-        var validProperties = new List<string> { "PersonId", "NationalNo", "FirstName", "LastName", /* other properties... */ };
 
+        // Define a list of valid property names
+        var validProperties = new List<string>
+{
+    "PersonId",
+    "NationalNo",
+    "FirstName",
+    "SecondName",
+    "ThirdName",
+    "LastName",
+    "Gender",
+    "Phone",
+    "Email",
+    "Address",
+    "DateOfBirth",
+    "Nationality"
+};
         // Check if orderBy is one of the valid properties
         return validProperties.Contains(orderBy);
     }

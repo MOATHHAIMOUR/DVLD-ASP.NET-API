@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DVLD.Application.Features.PersonFeature.Command.DeletePerson
 {
-    public class DeletePersonCommandValidator : AbstractValidator<DeletePersonCommand>
+    public class AddPersonCommandValidator : AbstractValidator<DeletePersonCommand>
     {
-        public DeletePersonCommandValidator()
+        public AddPersonCommandValidator()
         {
             RuleFor(x => x.PersonId)
                 .NotEmpty().WithMessage("Person Id is required")
