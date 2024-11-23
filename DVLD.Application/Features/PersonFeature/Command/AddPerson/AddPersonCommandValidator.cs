@@ -45,8 +45,8 @@ namespace DVLD.Application.Features.PersonFeature.Command.AddPerson
             RuleFor(x => x.AddPersonDTO.Gender)
                 .NotEmpty()
                 .WithMessage("Gender is required.")
-                .Must(g => g == "Male" || g == "Female")
-                .WithMessage("Gender must be 'Male' or 'Female'.");
+                .Must(g => g == "male" || g == "female")
+                .WithMessage("Gender must be 'male' or 'female'.");
 
             // Phone: Required, max length 10
             RuleFor(x => x.AddPersonDTO.Phone)

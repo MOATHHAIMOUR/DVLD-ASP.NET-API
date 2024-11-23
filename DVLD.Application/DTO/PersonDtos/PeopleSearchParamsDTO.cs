@@ -1,4 +1,4 @@
-﻿namespace DVLD.Application.DTO.People
+﻿namespace DVLD.Application.DTO.PersonDtos
 {
     public class PeopleSearchParamsDTO
     {
@@ -13,10 +13,10 @@
         public string? Email { get; set; }
         public string? CountryName { get; set; }
         public int? PageNumber { get; set; } = 1;
-        public int? PageSize { get; set; } = 10; 
+        public int? PageSize { get; set; } = 10;
         public string? SortBy { get; set; }
         public string? SortDirection { get; set; } = "ASC";
 
-      
+
     }
 }

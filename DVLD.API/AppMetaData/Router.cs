@@ -1,4 +1,4 @@
-﻿namespace DVLD.API.AppMetaData
+namespace DVLD.API.AppMetaData
 {
     public class Router
     {
@@ -22,9 +22,34 @@
             public const string UpdatePerson = prefix + "/" + "UpdatePerson";
         }
 
+        public static class UserRouting
+        {
+            public const string prefix = Rule + "User";
+
+            public const string GetUsers = prefix + "/" + "GetUsers";
+
+            public const string GetUser = prefix + "/" + "GetUser";
+
+            public const string DeleteUser = prefix + "/" + "DeleteUser/{UserId}";
+
+            public const string AddUser = prefix + "/" + "AddUser";
+
+
+            public const string UpdateUser = prefix + "/" + "UpdateUser";
+
+        }
+
         public static class SharedRouting
         {
+            public const string GetAllApplicationTypes = Rule + "GetAllApplicationTypes";
+
+            public const string UpdateApplicationType = Rule + "UpdateApplicationType";
+
             public const string GetAllCountries = Rule + "GetAllCountries";
         }
+
+
     }
+
+
 }

@@ -18,16 +18,16 @@ namespace DVLD.Domain.IRepository
             string? Email = null,
             string? CountryName = null,
             int PageNumber = 1,
-            int pageSize =5,
+            int pageSize = 5,
             string? SortBy = null,
             EnumSortDirection sortDirection = EnumSortDirection.ASC);
 
         Task<Person?> GetPersonByIdOrNationalNo(int? personId, string? nationalNo);
 
         Task<int> AddPersonAsycn(Person person);
+
         Task<bool> UpdatePersonAsycn(Person person);
 
-        
         Task<bool> DeletePersonAsync(int personId);
     }
 }

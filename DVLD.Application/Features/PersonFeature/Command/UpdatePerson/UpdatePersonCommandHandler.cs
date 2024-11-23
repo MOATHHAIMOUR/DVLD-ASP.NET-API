@@ -9,7 +9,7 @@ namespace DVLD.Application.Features.PersonFeature.Command.UpdatePerson
     public class UpdatePersonCommandHandler : IRequestHandler<UpdatePersonCommand, ApiResponse<string>>
     {
         private readonly IPersonServices _personServices;
-        private readonly  IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public UpdatePersonCommandHandler(IPersonServices personServices, IMapper mapper)
         {

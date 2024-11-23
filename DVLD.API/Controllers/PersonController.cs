@@ -1,7 +1,7 @@
 ﻿using DVLD.API.AppMetaData;
 using DVLD.API.Controllers.Base;
 using DVLD.Application.Common.ApiResponse;
-using DVLD.Application.DTO.People;
+using DVLD.Application.DTO.PersonDtos;
 using DVLD.Application.Features.PersonFeature.Command.AddPerson;
 using DVLD.Application.Features.PersonFeature.Command.DeletePerson;
 using DVLD.Application.Features.PersonFeature.Command.UpdatePerson;
@@ -16,7 +16,7 @@ namespace DVLD.API.Controllers
     [ApiController]
     public class PersonController : AppController
     {
-       
+
         public PersonController(IMediator mediator) : base(mediator)
         {
         }
@@ -27,14 +27,14 @@ namespace DVLD.API.Controllers
         public async Task<ActionResult<ApiResponse<List<PeopleView>>>> GetPeople([FromQuery] PeopleSearchParamsDTO filters)
         {
             var response = await _mediator.Send(new GetAllPersonsQuery(filters));
-            return  NewResult(response);
+            return NewResult(response);
         }
 
         [HttpGet(Router.PersonRouting.GetPerson)]
-        [ProducesResponseType(StatusCodes.Status200OK)] 
-        public async Task<ActionResult<ApiResponse<PersonDTO>>> GetPerson([FromQuery]int? PersonId, [FromQuery] string? NationalNo)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<ApiResponse<GetPersonDTO>>> GetPerson([FromQuery][FromRoute] int? PersonId, [FromQuery] string? NationalNo)
         {
-            var response = await _mediator.Send(new GetPersonQuery(PersonId,NationalNo));
+            var response = await _mediator.Send(new GetPersonQuery(PersonId, NationalNo));
 
             return NewResult(response);
         }
@@ -52,9 +52,8 @@ namespace DVLD.API.Controllers
 
         [HttpPost(Router.PersonRouting.AddPerson)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [Consumes("multipart/form-data")]
 
-        public async Task<IActionResult> AddPerson([FromForm] AddPersonDTO addPersonDto)
+        public async Task<IActionResult> AddPerson([FromBody] AddPersonDTO addPersonDto)
         {
             var response = await _mediator.Send(new AddPersonCommand(addPersonDto));
 

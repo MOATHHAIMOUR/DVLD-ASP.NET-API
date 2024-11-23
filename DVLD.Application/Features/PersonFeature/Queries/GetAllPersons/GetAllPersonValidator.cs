@@ -1,5 +1,4 @@
-﻿using DVLD.Application.DTO.People;
-using DVLD.Application.Features.PersonFeature.Queries.GetAllPersons;
+﻿using DVLD.Application.Features.PersonFeature.Queries.GetAllPersons;
 using FluentValidation;
 
 public class GetPeopleQueryValidator : AbstractValidator<GetAllPersonsQuery>

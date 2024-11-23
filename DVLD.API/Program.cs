@@ -1,5 +1,7 @@
+using DVLD.API.Middlewares;
 using DVLD.Application;
 using DVLD.Infrastructure;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +12,15 @@ builder.Services.InfrastructureDependencies();
 builder.Services.ApplicationDependencies();
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Use camelCase for JSON serialization
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+
+        // Enable case-insensitive matching for deserialization
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 
 builder.Services.AddCors(options =>
 {
@@ -27,7 +37,10 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExeptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -38,11 +51,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAll");
 
-app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseHttpsRedirection();
 app.MapControllers();
-
 app.Run();
 

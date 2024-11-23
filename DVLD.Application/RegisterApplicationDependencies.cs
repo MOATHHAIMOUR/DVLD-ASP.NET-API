@@ -24,6 +24,7 @@ namespace DVLD.Application
 
             // Add All  DI contianer
             services.AddScoped<IPersonServices, PersonServices>();
+            services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<ISharedServices, SharedServices>();
 
 

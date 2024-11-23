@@ -1,10 +1,10 @@
 ﻿using DVLD.Application.Common.ApiResponse;
-using DVLD.Application.DTO.People;
+using DVLD.Application.DTO.PersonDtos;
 using MediatR;
 
 namespace DVLD.Application.Features.PersonFeature.Queries.GetPerson
 {
-    public class GetPersonQuery : IRequest<ApiResponse<PersonDTO>>
+    public class GetPersonQuery : IRequest<ApiResponse<GetPersonDTO>>
     {
         public GetPersonQuery(int? personId, string? nationalNo)
         {

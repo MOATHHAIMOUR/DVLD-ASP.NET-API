@@ -11,10 +11,12 @@ namespace DVLD.Application.Services
     public class PersonServices : IPersonServices
     {
         private readonly IPersonRepository _personRepository;
+        private readonly ISharedServices _sharedServices;
 
-        public PersonServices(IPersonRepository personRepository)
+        public PersonServices(IPersonRepository personRepository, ISharedServices sharedServices)
         {
             _personRepository = personRepository;
+            _sharedServices = sharedServices;
         }
 
         public async Task<Result<List<PeopleView>>> GetAllPeopleViewAsync(int? PersonId = null, string? NationalNo = null, string? FirstName = null, string? SecondName = null, string? ThirdName = null, string? LastName = null, EnumGender? Gender = null, string? Phone = null, string? Email = null, string? CountryName = null, string? SortBy = null, int PageNumber = 1, int PageSize = 10, EnumSortDirection sortDirection = EnumSortDirection.ASC)
@@ -41,6 +43,11 @@ namespace DVLD.Application.Services
         {
             var person = await _personRepository.GetPersonByIdOrNationalNo(personId, NationalNo);
 
+            if (person != null)
+            {
+                person.Country = await _sharedServices.GetCountryByIdAsync(person.CountryId);
+            }
+
             return person == null
                 ? Result<Person>.Failure(Error.RecoredNotFound("Person not found"))
                 : Result<Person>.Success(person);
@@ -48,14 +55,14 @@ namespace DVLD.Application.Services
 
         public async Task<Result<int>> AddPersonAsync(Person person)
         {
-           int insertedId = await _personRepository.AddPersonAsycn(person);
+            int insertedId = await _personRepository.AddPersonAsycn(person);
 
-           return Result<int>.Success(insertedId);
+            return Result<int>.Success(insertedId);
         }
 
         public async Task<Result<string>> DeletePersonByIdAsync(int PersonID)
         {
-           bool result = await _personRepository.DeletePersonAsync(PersonID);
+            bool result = await _personRepository.DeletePersonAsync(PersonID);
 
             return result ?
                 Result<string>.Success($"User with ID {PersonID} has been successfully deleted.")

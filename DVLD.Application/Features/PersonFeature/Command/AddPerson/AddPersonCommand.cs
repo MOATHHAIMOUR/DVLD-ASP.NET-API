@@ -1,5 +1,5 @@
 ﻿using DVLD.Application.Common.ApiResponse;
-using DVLD.Application.DTO.People;
+using DVLD.Application.DTO.PersonDtos;
 using MediatR;
 
 namespace DVLD.Application.Features.PersonFeature.Command.AddPerson

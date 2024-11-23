@@ -8,8 +8,9 @@ namespace DVLD.Infrastructure
     {
         public static IServiceCollection InfrastructureDependencies(this IServiceCollection services)
         {
-            services.AddScoped<IPersonRepository,PersonRepository>();
+            services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<ISharedRepository, SharedRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
 
             return services;
