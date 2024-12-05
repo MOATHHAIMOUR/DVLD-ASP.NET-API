@@ -60,7 +60,7 @@ namespace DVLD.Infrastructure.Repository
                     {
                         applicationTypes.Add(new ApplicationType
                         {
-                            ApplicationTypeID = Convert.ToInt32(reader["ApplicationTypeID"]),
+                            ApplicationTypeId = Convert.ToInt32(reader["ApplicationTypeID"]),
                             ApplicationTypeTitle = reader["ApplicationTypeTitle"].ToString()!,
                             ApplicationFees = Convert.ToDecimal(reader["ApplicationFees"])
                         });
@@ -115,7 +115,7 @@ namespace DVLD.Infrastructure.Repository
                 };
 
                 // Add parameters for the stored procedure
-                command.Parameters.AddWithValue("@ApplicationTypeID", applicationType.ApplicationTypeID);
+                command.Parameters.AddWithValue("@ApplicationTypeID", applicationType.ApplicationTypeId);
                 command.Parameters.AddWithValue("@ApplicationTypeTitle", applicationType.ApplicationTypeTitle);
                 command.Parameters.AddWithValue("@ApplicationFees", applicationType.ApplicationFees);
 

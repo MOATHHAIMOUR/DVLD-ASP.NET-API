@@ -26,6 +26,9 @@ namespace DVLD.Application
             services.AddScoped<IPersonServices, PersonServices>();
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<ISharedServices, SharedServices>();
+            services.AddScoped<ILocalDrivingLicenseApplicationServices, LocalDrivingApplicationServices>();
+            services.AddScoped<ITestServices, TestServices>();
+            services.AddScoped<IInternationalLicenseServices, InternationalLicenseServices>();
 
 
             return services;

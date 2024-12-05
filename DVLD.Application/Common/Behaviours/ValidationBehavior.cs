@@ -23,7 +23,7 @@ namespace DVLD.Application.Common.Behaviours
                 var validationResults = await Task.WhenAll(_validators.Select(v => v.ValidateAsync(context, cancellationToken)));
                 var failures = validationResults.SelectMany(r => r.Errors).Where(f => f != null).ToList();
 
-                if (failures.Count != 0)
+                if (failures.Count > 0)
                 {
                     var message = failures.Select(x => x.PropertyName + ": " + x.ErrorMessage).FirstOrDefault();
 

@@ -10,7 +10,6 @@ namespace DVLD.Domain.IRepository
 
         public Task<Country> GetCountryByIdAsync(int countryId);
 
-
         public Task<bool> UpdateApplicationType(ApplicationType applicationType);
 
     }

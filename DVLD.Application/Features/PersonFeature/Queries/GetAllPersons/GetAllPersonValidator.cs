@@ -56,17 +56,17 @@ public class GetPeopleQueryValidator : AbstractValidator<GetAllPersonsQuery>
             .WithMessage("CountryName must be at most 50 characters.");
 
         // OrderBy: Optional, max length 50
-        RuleFor(x => x.PeopleSearchParams.SortBy)
+        RuleFor(x => x.PeopleSearchParams.OrderBy)
             .MaximumLength(50)
             .WithMessage("SortBy must be at most 50 characters.")
             .Must(sortBy => IsValidProperty(sortBy))
-            .When(x => !string.IsNullOrEmpty(x.PeopleSearchParams.SortBy))
+            .When(x => !string.IsNullOrEmpty(x.PeopleSearchParams.OrderBy))
             .WithMessage("SortBy must be a valid property of PeopleSearchParams.");
 
         // OrderDirection: Optional, but must be 'ASC' or 'DESC' if specified
-        RuleFor(x => x.PeopleSearchParams.SortDirection)
+        RuleFor(x => x.PeopleSearchParams.OrderDirection)
             .Must(direction => direction == "ASC" || direction == "DESC")
-            .When(x => !string.IsNullOrEmpty(x.PeopleSearchParams.SortBy))
+            .When(x => !string.IsNullOrEmpty(x.PeopleSearchParams.OrderBy))
             .WithMessage("OrderDirection must be 'ASC' or 'DESC'.");
 
         // PageSize: Must be between 1 and 100 (for example)

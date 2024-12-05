@@ -1,10 +1,11 @@
 ﻿using DVLD.Application.Common.Errors;
 using DVLD.Application.Common.ResultPattern;
+using DVLD.Application.DTO.PersonDtos;
 using DVLD.Application.Services.IServices;
 using DVLD.Domain.Entites;
-using DVLD.Domain.Enums;
 using DVLD.Domain.IRepository;
-using DVLD.Domain.views;
+using DVLD.Domain.StoredProcdure;
+using DVLD.Domain.views.Person;
 
 namespace DVLD.Application.Services
 {
@@ -19,24 +20,9 @@ namespace DVLD.Application.Services
             _sharedServices = sharedServices;
         }
 
-        public async Task<Result<List<PeopleView>>> GetAllPeopleViewAsync(int? PersonId = null, string? NationalNo = null, string? FirstName = null, string? SecondName = null, string? ThirdName = null, string? LastName = null, EnumGender? Gender = null, string? Phone = null, string? Email = null, string? CountryName = null, string? SortBy = null, int PageNumber = 1, int PageSize = 10, EnumSortDirection sortDirection = EnumSortDirection.ASC)
+        public async Task<Result<IEnumerable<PeopleView>>> GetAllPeopleViewAsync(PeopleSearchParamsDTO peopleSearchParamsDTO)
         {
-            return Result<List<PeopleView>>.Success(await _personRepository.GetPeopleViewAsync(
-                                                PersonId,
-                                                NationalNo,
-                                                FirstName,
-                                                SecondName,
-                                                ThirdName,
-                                                LastName,
-                                                Gender,
-                                                Phone,
-                                                Email,
-                                                CountryName,
-                                                PageNumber,
-                                                PageSize,
-                                                SortBy,
-                                                sortDirection
-                                            ));
+            return Result<IEnumerable<PeopleView>>.Success(await _personRepository.GetAllAsync<PeopleView>(PersonStoredProcedures.SP_GetPeople, peopleSearchParamsDTO));
         }
 
         public async Task<Result<Person>> GetPersonAsync(int? personId, string? NationalNo)
@@ -55,24 +41,24 @@ namespace DVLD.Application.Services
 
         public async Task<Result<int>> AddPersonAsync(Person person)
         {
-            int insertedId = await _personRepository.AddPersonAsycn(person);
+            int insertedId = await _personRepository.AddAsync(PersonStoredProcedures.SP_AddPerson, person);
 
             return Result<int>.Success(insertedId);
         }
 
-        public async Task<Result<string>> DeletePersonByIdAsync(int PersonID)
+        public async Task<Result<string>> DeletePersonByIdAsync(int PersonId)
         {
-            bool result = await _personRepository.DeletePersonAsync(PersonID);
+            bool result = await _personRepository.DeleteAsync(PersonStoredProcedures.SP_DeletePersonById, "PersonId", PersonId);
 
             return result ?
-                Result<string>.Success($"User with ID {PersonID} has been successfully deleted.")
+                Result<string>.Success($"User with ID {PersonId} has been successfully deleted.")
                 :
-                Result<string>.Failure(Error.RecoredNotFound($"Deletion failed: No user found with ID {PersonID}."));
+                Result<string>.Failure(Error.RecoredNotFound($"Deletion failed: No user found with ID {PersonId}."));
         }
 
         public async Task<Result<string>> UpdatePersonAsync(Person person)
         {
-            bool result = await _personRepository.UpdatePersonAsycn(person);
+            bool result = await _personRepository.UpdateAsync(PersonStoredProcedures.SP_UpdatePerson, person);
 
             return result ?
                 Result<string>.Success($"Person with name {person.FirstName + " " + person.LastName} Updated scsessfully")

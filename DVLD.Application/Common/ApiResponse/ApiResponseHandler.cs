@@ -56,13 +56,16 @@ namespace DVLD.Application.Common.ApiResponse
 
 
         // Generates a bad request response
-        public static ApiResponse<T> BadRequest<T>(string message = "Bad Request")
+        public static ApiResponse<T> BadRequest<T>(List<string> Errors, string message = "Bad Request")
         {
             return new ApiResponse<T>()
             {
                 StatusCode = HttpStatusCode.BadRequest,
                 Succeeded = false,
-                Message = message
+                Message = message,
+                Errors = Errors,
+
+
             };
         }
 

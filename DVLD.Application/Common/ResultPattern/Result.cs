@@ -15,7 +15,7 @@ namespace DVLD.Application.Common.ResultPattern
             IsSuccess = false;
         }
 
-        private Result(T? value)
+        private Result(T value)
         {
             Value = value;
             Error = Error.None;

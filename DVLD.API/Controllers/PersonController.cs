@@ -7,7 +7,7 @@ using DVLD.Application.Features.PersonFeature.Command.DeletePerson;
 using DVLD.Application.Features.PersonFeature.Command.UpdatePerson;
 using DVLD.Application.Features.PersonFeature.Queries.GetAllPersons;
 using DVLD.Application.Features.PersonFeature.Queries.GetPerson;
-using DVLD.Domain.views;
+using DVLD.Domain.views.Person;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,7 +1,7 @@
 using DVLD.API.Middlewares;
 using DVLD.Application;
 using DVLD.Infrastructure;
-using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,11 +15,11 @@ builder.Services.ApplicationDependencies();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // Use camelCase for JSON serialization
-        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-
         // Enable case-insensitive matching for deserialization
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    }).AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
 builder.Services.AddCors(options =>
@@ -36,7 +36,6 @@ builder.Services.AddCors(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 var app = builder.Build();
 

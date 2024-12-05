@@ -37,7 +37,7 @@ namespace DVLD.Application.Services
             var result = await _sharedRepository.UpdateApplicationType(applicationType);
 
             return result ?
-              Result<string>.Success($"ApplicationType with id: {applicationType.ApplicationTypeID} is Updated successfully")
+              Result<string>.Success($"ApplicationType with id: {applicationType.ApplicationTypeId} is Updated successfully")
               :
               Result<string>.Failure(Error.RecoredNotFound($"ApplicationType was not found"));
         }

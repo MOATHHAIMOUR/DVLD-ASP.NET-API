@@ -9,7 +9,7 @@ namespace DVLD.API.AppMetaData
 
         public static class PersonRouting
         {
-            public const string prefix = Rule + "Person";
+            private const string prefix = Rule + "Person";
 
             public const string GetPeople = prefix + "/" + "GetPeople";
 
@@ -24,7 +24,7 @@ namespace DVLD.API.AppMetaData
 
         public static class UserRouting
         {
-            public const string prefix = Rule + "User";
+            private const string prefix = Rule + "User";
 
             public const string GetUsers = prefix + "/" + "GetUsers";
 
@@ -36,6 +36,52 @@ namespace DVLD.API.AppMetaData
 
 
             public const string UpdateUser = prefix + "/" + "UpdateUser";
+
+        }
+
+        public static class LocalDrivingApplicationRouting
+        {
+
+            private const string prefix = Rule + "LocalDrivingApplication";
+
+            public const string GetLocalDrivingApplicationView = prefix + "/" + "GetLocalDrivingApplicationView";
+
+            public const string GetLicenseClases = prefix + "/" + "GetLicenseClasses";
+
+            public const string AddNewLocalDrivingApplication = prefix + "/" + "AddNewLocalDrivingLicenseApplication";
+
+            public const string GetLicenseView = prefix + "/" + "GetLicenseView";
+
+            public const string RenewLocalDrivingLicense = prefix + "/" + "RenewLocalDrivingLicense";
+
+            public const string DetainLocalDrivingLicense = prefix + "/" + "DetainLocalDrivingLicense";
+
+
+        }
+
+        public static class InternationalLicenseRouting
+        {
+
+            private const string prefix = Rule + "InternationalLicense";
+
+            public const string AddNewInternationalLicense = prefix + "/" + "AddNewInternationalLicense";
+
+            public const string GetInternationalLicenseById = prefix + "/" + "GetInternationalLicenseById";
+
+            public const string GetAllInternationalLicense = prefix + "/" + "GetAllInternationalLicense";
+
+        }
+
+
+        public static class TestRouting
+        {
+
+            private const string prefix = Rule + "Test";
+            public const string GetTestLocalDrivingLicenseDetail = prefix + "/" + "GetTestLocalDrivingLicenseDetail/{localDrivingApplication}";
+            public const string GetTestAppoimentView = prefix + "/" + "GetTestAppointmentView";
+            public const string GetScheduleTestInfoView = prefix + "/" + "GetScheduleTestInfoView";
+            public const string AddTestAppointment = prefix + "/" + "AddTestAppointment";
+            public const string AddTestResult = prefix + "/" + "AddTestResult";
 
         }
 
