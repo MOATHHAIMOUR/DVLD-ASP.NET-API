@@ -2,8 +2,9 @@
 using DVLD.API.Controllers.Base;
 using DVLD.Application.Common.ApiResponse;
 using DVLD.Application.DTO.InternationalLicenseDtos;
-using DVLD.Application.Features.InternationalLicenseFeature.Commands.AddNewInternationalLicense;
-using DVLD.Application.Features.InternationalLicenseFeature.Quiers.GetAllInternationalLicense;
+using DVLD.Application.Features.ApplicationsFeatuers.InternationalLicenseFeature.Commands.AddNewInternationalLicense;
+using DVLD.Application.Features.ApplicationsFeatuers.InternationalLicenseFeature.Quiers.GetAllInternationalLicense;
+using DVLD.Application.Features.ApplicationsFeatuers.InternationalLicenseFeature.Quiers.GetInternationalLicense;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

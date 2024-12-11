@@ -41,12 +41,11 @@ namespace DVLD.Application.Features.PersonFeature.Command.UpdatePerson
                 .MaximumLength(20)
                 .WithMessage("LastName must be at most 20 characters.");
 
-            // Gender: Required, must be 'Male' or 'Female'
             RuleFor(x => x.UpdatePersonDTO.Gender)
-                .NotEmpty()
+                .NotNull()
                 .WithMessage("Gender is required.")
-                .Must(g => g == "male" || g == "female")
-                .WithMessage("Gender must be 'male' or 'female'.");
+                .IsInEnum()
+                .WithMessage("The Gender must be a valid value from the EnumGender enum.");
 
             // Phone: Required, max length 10
             RuleFor(x => x.UpdatePersonDTO.Phone)
@@ -64,6 +63,17 @@ namespace DVLD.Application.Features.PersonFeature.Command.UpdatePerson
                 .EmailAddress()
                 .WithMessage("Email must be a valid email address.");
 
+            RuleFor(x => x)
+                       .Must((x) =>
+                       {
+                           if (x.UpdatePersonDTO.ImageFile == null && string.IsNullOrEmpty(x.UpdatePersonDTO.ImagePath))
+                           {
+                               return false;
+                           }
+                           return true;
+                       })
+                       .WithMessage("Either ImageFile or ImagePath must have a value.");
+
             // CountryId: Required, valid between 1 and 198
             RuleFor(x => x.UpdatePersonDTO.CountryId)
                 .NotEmpty()
@@ -71,5 +81,7 @@ namespace DVLD.Application.Features.PersonFeature.Command.UpdatePerson
                 .InclusiveBetween(1, 198)
                 .WithMessage("CountryId must be between 1 and 198.");
         }
+
+
     }
 }

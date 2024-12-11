@@ -27,7 +27,7 @@ namespace DVLD.Application.Features.SettingsFeatuer.Command.UpdateApplicationTyp
             }
             else
             {
-                return ApiResponseHandler.NotFound<string>(result.Error.Message);
+                return ApiResponseHandler.NotFound<string>([result.Error.Message]);
             }
 
         }

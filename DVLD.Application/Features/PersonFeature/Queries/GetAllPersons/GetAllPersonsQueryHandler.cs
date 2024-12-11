@@ -5,28 +5,32 @@ using MediatR;
 
 namespace DVLD.Application.Features.PersonFeature.Queries.GetAllPersons
 {
-    public class GetAllCountriesQueryHandler : IRequestHandler<GetAllPersonsQuery, ApiResponse<IEnumerable<PeopleView>>>
+    public class GetAllPersonsQueryHandler : IRequestHandler<GetAllPersonsQuery, ApiResponse<IEnumerable<PersonView>>>
     {
         private readonly IPersonServices _personServices;
+        private readonly ISharedServices _sharedServices;
 
-        public GetAllCountriesQueryHandler(IPersonServices personServices)
+        public GetAllPersonsQueryHandler(IPersonServices personServices, ISharedServices sharedServices)
         {
             _personServices = personServices;
+            _sharedServices = sharedServices;
         }
 
-        public async Task<ApiResponse<IEnumerable<PeopleView>>> Handle(GetAllPersonsQuery request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<IEnumerable<PersonView>>> Handle(GetAllPersonsQuery request, CancellationToken cancellationToken)
         {
-            IEnumerable<PeopleView> peopel = (await _personServices.GetAllPeopleViewAsync(request.PeopleSearchParams)).Value!;
+            // people view data
+            IEnumerable<PersonView> peopel = (await _personServices.GetAllPeopleViewAsync(request.PeopleSearchParams)).Value!;
 
-            // Count the number of people
-            int numberOfPeople = peopel.Count();
+            // get total people number 
+            int totalNumberOfPeople = (await _sharedServices.GetRowCountAsync("People")).Value;
+
 
             // Calculate the total pages based on the page size
-            int totalPages = (int)Math.Ceiling(numberOfPeople / Convert.ToDouble(request.PeopleSearchParams.PageSize));
+            int totalPages = (int)Math.Ceiling(totalNumberOfPeople / Convert.ToDouble(request.PeopleSearchParams.PageSize));
 
             return ApiResponseHandler.Success(peopel, meta: new
             {
-                count = numberOfPeople,
+                count = totalNumberOfPeople,
                 totalPages,
             });
         }

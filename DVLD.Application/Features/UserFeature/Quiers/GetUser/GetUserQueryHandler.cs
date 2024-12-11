@@ -24,7 +24,7 @@ namespace DVLD.Application.Features.UserFeature.Quiers.GetUser
 
             return result.IsSuccess ?
                 ApiResponseHandler.Success(_mapper.Map<GetUserDTO>(result.Value)) :
-                ApiResponseHandler.NotFound<GetUserDTO>(result.Error.Message);
+                ApiResponseHandler.NotFound<GetUserDTO>([result.Error.Message]);
         }
     }
 }

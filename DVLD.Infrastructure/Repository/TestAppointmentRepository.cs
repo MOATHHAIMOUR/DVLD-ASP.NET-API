@@ -1,16 +1,18 @@
 ﻿using AutoMapper;
 using DVLD.Domain.Entites;
 using DVLD.Domain.IRepository;
-using DVLD.Infrastructure.Repository.Base;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace DVLD.Infrastructure.Repository
 {
-    public class TestAppointmentRepository : GenericRepository<TestAppointment>, ITestAppointmentRepository
+    public class TestAppointmentRepository : ITestAppointmentRepository
     {
-        public TestAppointmentRepository(IMapper mapper) : base(mapper)
+        private readonly IMapper _mapper;
+
+        public TestAppointmentRepository(IMapper mapper)
         {
+            _mapper = mapper;
         }
 
         public async Task<bool> IsApplicantPassTestAsync(int localDrivingApplicationId, int testTypeId)
@@ -70,6 +72,36 @@ namespace DVLD.Infrastructure.Repository
                 }
             }
 
+        }
+
+        public Task<IEnumerable<TestAppointment>> GetAllAsync(string storedProcedure)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TestAppointment?> GetAsync(string storedProcedure, string propertyName, int value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> AddAsync(string storedProcedure, TestAppointment entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UpdateAsync(string storedProcedure, TestAppointment entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteAsync(string storedProcedure, string propertyName, int value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> IsExist(string storedProcedure, string propertyName, string value)
+        {
+            throw new NotImplementedException();
         }
     }
 }

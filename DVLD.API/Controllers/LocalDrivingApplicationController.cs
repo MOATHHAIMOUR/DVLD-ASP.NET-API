@@ -2,11 +2,11 @@
 using DVLD.API.Controllers.Base;
 using DVLD.Application.Common.ApiResponse;
 using DVLD.Application.DTO.LocalDrivingApplicationDtos;
-using DVLD.Application.Features.LocalDrivingApplicationFeature.Command.AddNewLocalDrivingLicense;
-using DVLD.Application.Features.LocalDrivingApplicationFeature.Command.RenewLocalDrivingLicense;
-using DVLD.Application.Features.LocalDrivingApplicationFeature.Queries.GetLicenseClasses;
-using DVLD.Application.Features.LocalDrivingApplicationFeature.Queries.GetLicenseDrivingView;
-using DVLD.Application.Features.LocalDrivingApplicationFeature.Queries.GetLocalDrivingApplicationsView;
+using DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplicationFeature.Command.AddNewLocalDrivingLicense;
+using DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplicationFeature.Command.RenewLocalDrivingLicense;
+using DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplicationFeature.Queries.GetLicenseClasses;
+using DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplicationFeature.Queries.GetLicenseDrivingView;
+using DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplicationFeature.Queries.GetLocalDrivingApplicationsView;
 using DVLD.Domain.Entites;
 using DVLD.Domain.views.License.LocalLicense;
 using DVLD.Domain.views.LocalDrivingApplication;

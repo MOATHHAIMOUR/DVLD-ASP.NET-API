@@ -16,13 +16,7 @@ namespace DVLD.Domain.IRepository
         int createdByUserId,
         DateTime expirationDate);
 
-        public Task<int> DetainLocalDrivingLicenseAsync(DetainedLicense detainedLicense);
 
-        public Task<int> ReleaseDetainLocalDrivingLicenseAsync(
-         int licenseId,
-         DateTime detainDate,
-         decimal fineFees,
-         int releasedByUserId);
 
         public Task<bool> IsLicenseDetainedAsync(int licenseId);
 

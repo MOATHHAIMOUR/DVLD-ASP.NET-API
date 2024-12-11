@@ -1,22 +1,21 @@
 ﻿using AutoMapper;
 using DVLD.Domain.Entites;
 using DVLD.Domain.IRepository;
-using DVLD.Infrastructure.Repository.Base;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace DVLD.Infrastructure.Repository
 {
-    public class LocalDrivingApplicationRepository : GenericRepository<LocalDrivingLicenseApplication>, ILocalDrivingApplicationRepository
+    public class LocalDrivingApplicationRepository : ILocalDrivingApplicationRepository
     {
-        public LocalDrivingApplicationRepository(IMapper mapper) : base(mapper)
+        private readonly IMapper _mapper;
+
+        public LocalDrivingApplicationRepository(IMapper mapper)
         {
+            _mapper = mapper;
         }
 
-        public async Task<(int ApplicationId, int RenewLicenseId)> RenewLocalDrivingLicenseAsync(
-           int licenseId,
-           int createdByUserId,
-           DateTime expirationDate)
+        public async Task<(int ApplicationId, int RenewLicenseId)> RenewLocalDrivingLicenseAsync(int licenseId, int createdByUserId, DateTime expirationDate)
         {
             using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
             {
@@ -98,12 +97,7 @@ namespace DVLD.Infrastructure.Repository
             }
         }
 
-
-
-        public async Task<(int ApplicationId, int ReplacementForLostLicenseId)> ReplaceForLostLocalDrivingLicenseAsync(
-            int licenseId,
-            int createdByUserId,
-            DateTime expirationDate)
+        public async Task<(int ApplicationId, int ReplacementForLostLicenseId)> ReplaceForLostLocalDrivingLicenseAsync(int licenseId, int createdByUserId, DateTime expirationDate)
         {
             using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
             {
@@ -144,86 +138,6 @@ namespace DVLD.Infrastructure.Repository
             }
         }
 
-
-        public async Task<int> DetainLocalDrivingLicenseAsync(
-        int licenseId,
-        DateTime detainDate,
-        decimal fineFees,
-        int createdByUserId)
-        {
-            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
-            {
-                using (SqlCommand command = new SqlCommand("SP_DetainLocalDrivingLicense", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    // Add input parameters
-                    command.Parameters.AddWithValue("@LicenseId", licenseId);
-                    command.Parameters.AddWithValue("@DetainDate", detainDate);
-                    command.Parameters.AddWithValue("@FineFees", fineFees);
-                    command.Parameters.AddWithValue("@CreatedByUserId", createdByUserId);
-
-                    // Add output parameter
-                    SqlParameter detainIdParam = new SqlParameter("@DetainId", SqlDbType.Int)
-                    {
-                        Direction = ParameterDirection.Output
-                    };
-
-                    command.Parameters.Add(detainIdParam);
-
-                    // Open connection asynchronously
-                    await connection.OpenAsync();
-
-                    // Execute the command asynchronously
-                    await command.ExecuteNonQueryAsync();
-
-                    // Retrieve output value
-                    int detainId = detainIdParam.Value != DBNull.Value ? (int)detainIdParam.Value : 0;
-
-                    return (detainId);
-                }
-            }
-        }
-
-
-        public async Task<int> ReleaseDetainLocalDrivingLicenseAsync(
-         int licenseId,
-         DateTime detainDate,
-         decimal fineFees,
-         int releasedByUserId)
-        {
-            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
-            {
-                using (SqlCommand command = new SqlCommand("SP_ReleaseDetainLocalDrivingLicense", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    // Add input parameters
-                    command.Parameters.AddWithValue("@LicenseId", licenseId);
-                    command.Parameters.AddWithValue("@DetainDate", detainDate);
-                    command.Parameters.AddWithValue("@FineFees", fineFees);
-                    command.Parameters.AddWithValue("@ReleasedByUserId", releasedByUserId);
-
-                    // Add output parameter
-                    SqlParameter releaseApplicationIdParam = new SqlParameter("@ReleaseApplicationId", SqlDbType.Int)
-                    {
-                        Direction = ParameterDirection.Output
-                    };
-                    command.Parameters.Add(releaseApplicationIdParam);
-
-                    // Open connection asynchronously
-                    await connection.OpenAsync();
-
-                    // Execute the command asynchronously
-                    await command.ExecuteNonQueryAsync();
-
-                    // Retrieve output value
-                    int releaseApplicationId = releaseApplicationIdParam.Value != DBNull.Value ? (int)releaseApplicationIdParam.Value : 0;
-
-                    return releaseApplicationId;
-                }
-            }
-        }
         public async Task<bool> IsLicenseDetainedAsync(int licenseId)
         {
             using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
@@ -256,7 +170,6 @@ namespace DVLD.Infrastructure.Repository
                 }
             }
         }
-
 
         public async Task<bool> IsLocalDrivingLicenseExistsAsync(int licenseId)
         {
@@ -291,6 +204,34 @@ namespace DVLD.Infrastructure.Repository
             }
         }
 
+        public Task<IEnumerable<LocalDrivingLicenseApplication>> GetAllAsync(string storedProcedure)
+        {
+            throw new NotImplementedException();
+        }
 
+        public Task<LocalDrivingLicenseApplication?> GetAsync(string storedProcedure, string propertyName, int value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> AddAsync(string storedProcedure, LocalDrivingLicenseApplication entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UpdateAsync(string storedProcedure, LocalDrivingLicenseApplication entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteAsync(string storedProcedure, string propertyName, int value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> IsExist(string storedProcedure, string propertyName, string value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

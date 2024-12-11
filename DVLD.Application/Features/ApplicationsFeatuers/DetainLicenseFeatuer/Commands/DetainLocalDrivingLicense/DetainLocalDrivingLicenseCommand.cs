@@ -1,17 +1,17 @@
 ﻿using DVLD.Application.Common.ApiResponse;
-using DVLD.Application.DTO.LocalDrivingApplicationDtos;
+using DVLD.Application.DTO.DetainLicenseDtos;
 using MediatR;
 
 namespace DVLD.Application.Features.ApplicationsFeatuers.DetainLicenseFeatuer.Commands.DetainLocalDrivingLicense
 {
-    public class DetainLocalDrivingLicenseCommand : IRequest<ApiResponse<RenewLocalLicenseResultDTO>>
+    public class DetainLocalDrivingLicenseCommand : IRequest<ApiResponse<object>>
     {
-        public DetainLocalDrivingLicenseCommand(DetainLicenseDTO detainLicenseDTO)
+        public DetainLocalDrivingLicenseCommand(AddNewDetainLicenseDTO detainLicenseDTO)
         {
             DetainLicenseDTO = detainLicenseDTO;
         }
 
-        public DetainLicenseDTO DetainLicenseDTO { get; set; }
+        public AddNewDetainLicenseDTO DetainLicenseDTO { get; set; }
 
     }
 }

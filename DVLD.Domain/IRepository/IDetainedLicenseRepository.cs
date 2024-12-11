@@ -5,6 +5,11 @@ namespace DVLD.Domain.IRepository
 {
     public interface IDetainedLicenseRepository : IGenericRepository<DetainedLicense>
     {
+        public Task<int> ReleaseDetainLocalDrivingLicenseAsync(
+        int licenseId,
+        DateTime detainDate,
+        int releasedByUserId);
+
 
     }
 }

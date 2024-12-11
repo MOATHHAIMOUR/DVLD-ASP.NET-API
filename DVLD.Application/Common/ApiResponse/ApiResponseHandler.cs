@@ -71,10 +71,11 @@ namespace DVLD.Application.Common.ApiResponse
 
 
         // Generates a not found response
-        public static ApiResponse<T> NotFound<T>(string? message)
+        public static ApiResponse<T> NotFound<T>(List<string> Errors, string? message = "")
         {
             return new ApiResponse<T>()
             {
+                Errors = Errors,
                 StatusCode = HttpStatusCode.NotFound,
                 Succeeded = false,
                 Message = string.IsNullOrEmpty(message) ? "Not Found" : message

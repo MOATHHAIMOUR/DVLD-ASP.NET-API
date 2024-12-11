@@ -72,6 +72,17 @@ namespace DVLD.API.AppMetaData
 
         }
 
+        public static class DetainLicenseRouting
+        {
+
+            private const string prefix = Rule + "DetainLicense";
+
+            public const string DetainLicense = prefix + "/" + "DetainLicense";
+
+            public const string ReleaseLicense = prefix + "/" + "ReleaseLicense";
+
+        }
+
 
         public static class TestRouting
         {

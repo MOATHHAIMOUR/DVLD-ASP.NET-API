@@ -1,9 +1,12 @@
 using DVLD.API.Middlewares;
 using DVLD.Application;
+using DVLD.Application.settings;
 using DVLD.Infrastructure;
-using System.Text.Json.Serialization;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 
 // Add Infrastructure layer Dependencies
 builder.Services.InfrastructureDependencies();
@@ -11,16 +14,13 @@ builder.Services.InfrastructureDependencies();
 // Add Application layer Dependencies
 builder.Services.ApplicationDependencies();
 
-// Add services to the container.
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // Enable case-insensitive matching for deserialization
-        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-    }).AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        // Configure JSON serializer options
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true; // Case-insensitive matching
     });
+
 
 builder.Services.AddCors(options =>
 {
@@ -32,11 +32,17 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+    c.UseInlineDefinitionsForEnums();
+});
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExeptionHandlingMiddleware>();

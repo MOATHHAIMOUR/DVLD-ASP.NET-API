@@ -19,7 +19,7 @@ namespace DVLD.Application.Features.TestFeatuer.Queries.GetScheduleTestInfo
         {
             var result = await _testServices.GetScheduleTestInfoAsync(request.LocalDrivingLicenseApplication, request.TestTypeId);
             if (result == null)
-                return ApiResponseHandler.NotFound<ScheduleTestView>("");
+                return ApiResponseHandler.NotFound<ScheduleTestView>([result.Error.Message]);
 
             return ApiResponseHandler.Success(result.Value!);
         }

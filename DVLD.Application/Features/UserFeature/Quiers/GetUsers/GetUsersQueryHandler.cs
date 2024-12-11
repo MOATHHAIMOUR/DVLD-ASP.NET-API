@@ -3,12 +3,11 @@ using DVLD.Application.Common.ApiResponse;
 using DVLD.Application.DTO.Users;
 using DVLD.Application.Services.IServices;
 using DVLD.Domain.Entites;
-using DVLD.Domain.Enums;
 using MediatR;
 
 namespace DVLD.Application.Features.UserFeature.Quiers.GetUsers
 {
-    public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, ApiResponse<List<GetUserDTO>>>
+    public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, ApiResponse<IEnumerable<GetUserDTO>>>
     {
         private readonly IUserServices _userServices;
 
@@ -20,19 +19,9 @@ namespace DVLD.Application.Features.UserFeature.Quiers.GetUsers
             _mapper = mapper;
         }
 
-        public async Task<ApiResponse<List<GetUserDTO>>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<IEnumerable<GetUserDTO>>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
         {
-            var usersDto = _mapper.Map<List<User>, List<GetUserDTO>>(await _userServices.GetUsers(
-
-                request.UserSearchParamsDTO.UserId,
-                request.UserSearchParamsDTO.PersonId,
-                request.UserSearchParamsDTO.UserName,
-                request.UserSearchParamsDTO.IsActive,
-                request.UserSearchParamsDTO.SortBy,
-                request.UserSearchParamsDTO.SortDireaction == "ASC" ? EnumSortDirection.ASC : EnumSortDirection.DESC,
-                request.UserSearchParamsDTO.PageSize,
-                request.UserSearchParamsDTO.PageNumber
-                ));
+            var usersDto = _mapper.Map<IEnumerable<User>, IEnumerable<GetUserDTO>>((await _userServices.GetUsers(request.UsersSearchParameters)).Value ?? []);
 
             return ApiResponseHandler.Success(usersDto);
 

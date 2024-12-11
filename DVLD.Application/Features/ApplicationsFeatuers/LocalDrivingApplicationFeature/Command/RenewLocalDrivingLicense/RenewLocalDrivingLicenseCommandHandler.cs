@@ -1,9 +1,10 @@
 ﻿using DVLD.Application.Common.ApiResponse;
 using DVLD.Application.DTO.LocalDrivingApplicationDtos;
+using DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplicationFeature.Command.RenewLocalDrivingLicense;
 using DVLD.Application.Services.IServices;
 using MediatR;
 
-namespace DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplicationFeature.Command.RenewLocalDrivingLicense
+namespace DVLD.Application.Features.LocalDrivingApplicationFeature.Command.RenewLocalDrivingLicense
 {
     public class RenewLocalDrivingLicenseCommandHandler : IRequestHandler<RenewLocalDrivingLicenseCommand, ApiResponse<RenewLocalLicenseResultDTO>>
     {

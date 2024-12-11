@@ -9,6 +9,7 @@ namespace DVLD.API.Controllers
     using DVLD.Application.Features.UserFeature.Command.UpdateUser;
     using DVLD.Application.Features.UserFeature.Quiers.GetUser;
     using DVLD.Application.Features.UserFeature.Quiers.GetUsers;
+    using DVLD.Domain.DomainSearchParameters;
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
 
@@ -21,9 +22,9 @@ namespace DVLD.API.Controllers
 
         [HttpGet(Router.UserRouting.GetUsers)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ApiResponse<GetUserDTO>>> GetUsers([FromQuery] UserSearchParamsDTO userSearchParamsDTO)
+        public async Task<ActionResult<ApiResponse<GetUserDTO>>> GetUsers([FromQuery] UsersSearchParameters UsersSearchParameters)
         {
-            var response = await _mediator.Send(new GetUsersQuery(userSearchParamsDTO));
+            var response = await _mediator.Send(new GetUsersQuery(UsersSearchParameters));
             return NewResult(response);
         }
 

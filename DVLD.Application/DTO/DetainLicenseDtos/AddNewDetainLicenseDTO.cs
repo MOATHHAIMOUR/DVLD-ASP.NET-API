@@ -1,6 +1,6 @@
-﻿namespace DVLD.Application.DTO.LocalDrivingApplicationDtos
+﻿namespace DVLD.Application.DTO.DetainLicenseDtos
 {
-    public class DetainLicenseDTO
+    public class AddNewDetainLicenseDTO
     {
         public int LicenseId { get; set; }
         public DateTime DetainDate { get; set; }

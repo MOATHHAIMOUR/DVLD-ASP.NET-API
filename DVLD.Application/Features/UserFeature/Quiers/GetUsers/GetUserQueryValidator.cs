@@ -6,39 +6,39 @@ namespace DVLD.Application.Features.UserFeature.Quiers.GetUsers
     {
         public GetUserQueryValidator()
         {
-            RuleFor(x => x.UserSearchParamsDTO.UserId)
+            RuleFor(x => x.UsersSearchParameters.UserId)
                 .GreaterThan(0).WithMessage("UserId must be greater than 0.")
-                .When(x => x.UserSearchParamsDTO.UserId.HasValue);
+                .When(x => x.UsersSearchParameters.UserId.HasValue);
 
-            RuleFor(x => x.UserSearchParamsDTO.PersonId)
+            RuleFor(x => x.UsersSearchParameters.PersonId)
                 .GreaterThan(0).WithMessage("PersonId must be greater than 0.")
-                .When(x => x.UserSearchParamsDTO.PersonId.HasValue);
+                .When(x => x.UsersSearchParameters.PersonId.HasValue);
 
-            RuleFor(x => x.UserSearchParamsDTO.UserName)
+            RuleFor(x => x.UsersSearchParameters.UserName)
                 .NotEmpty().WithMessage("UserName must not be empty.")
                 .MaximumLength(20).WithMessage("UserName must not exceed 20 characters.")
-                .When(x => !string.IsNullOrEmpty(x.UserSearchParamsDTO.UserName));
+                .When(x => !string.IsNullOrEmpty(x.UsersSearchParameters.UserName));
 
-            RuleFor(x => x.UserSearchParamsDTO.SortBy)
+            RuleFor(x => x.UsersSearchParameters.SortBy)
                 .Must(sortBy => IsValidSortField(sortBy))
                 .WithMessage("Invalid SortBy field.")
-                .When(x => !string.IsNullOrEmpty(x.UserSearchParamsDTO.SortBy));
+                .When(x => !string.IsNullOrEmpty(x.UsersSearchParameters.SortBy));
 
-            RuleFor(x => x.UserSearchParamsDTO.SortDireaction)
+            RuleFor(x => x.UsersSearchParameters.SortDirection)
                 .Must(sortDirection =>
                     sortDirection.Equals("asc", StringComparison.OrdinalIgnoreCase) ||
                     sortDirection.Equals("desc", StringComparison.OrdinalIgnoreCase))
                 .WithMessage("SortDireaction must be 'asc' or 'desc'.")
-                .When(x => !string.IsNullOrEmpty(x.UserSearchParamsDTO.SortDireaction));
+                .When(x => !string.IsNullOrEmpty(x.UsersSearchParameters.SortDirection));
 
-            RuleFor(x => x.UserSearchParamsDTO.PageSize)
+            RuleFor(x => x.UsersSearchParameters.PageSize)
                 .GreaterThan(0).WithMessage("PageSize must be greater than 0.")
                 .LessThanOrEqualTo(100).WithMessage("PageSize must not exceed 100.")
-                .When(x => x.UserSearchParamsDTO.PageSize.HasValue);
+                .When(x => x.UsersSearchParameters.PageSize.HasValue);
 
-            RuleFor(x => x.UserSearchParamsDTO.PageNumber)
+            RuleFor(x => x.UsersSearchParameters.PageNumber)
                 .GreaterThan(0).WithMessage("PageNumber must be greater than 0.")
-                .When(x => x.UserSearchParamsDTO.PageNumber.HasValue);
+                .When(x => x.UsersSearchParameters.PageNumber.HasValue);
         }
 
         private bool IsValidSortField(string? sortBy)

@@ -1,14 +1,16 @@
 ﻿using AutoMapper;
+using DVLD.Domain.DomainSearchParameters;
+using DVLD.Domain.Enums;
 using DVLD.Domain.IRepository.Base;
 using DVLD.Domain.StoredProcdure;
 using DVLD.Domain.views.License.InternationalLicense;
 using DVLD.Domain.views.License.LocalLicense;
+using DVLD.Domain.views.Person;
 using DVLD.Domain.views.Test;
-using DVLD.Infrastructure.InfrastructHelper;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace DVLD.Infrastructure.Repository.Base.Views
+namespace DVLD.Infrastructure.Repository.Views
 {
     public class DBViewsRepository : IDBViewsRepository
     {
@@ -17,6 +19,50 @@ namespace DVLD.Infrastructure.Repository.Base.Views
         public DBViewsRepository(IMapper mapper)
         {
             _mapper = mapper;
+        }
+
+        public async Task<IEnumerable<PersonView>> GetPeopleViewAync(string storedProcedure, PeopleSearchParameters PeopleSearchParameters)
+        {
+            var people = new List<PersonView>();
+
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                using (var command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add parameters dynamically based on PeopleSearchParameters
+                    command.Parameters.AddWithValue("@PersonId", PeopleSearchParameters.PersonId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@NationalNo", PeopleSearchParameters.NationalNo ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@FirstName", PeopleSearchParameters.FirstName ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@SecondName", PeopleSearchParameters.SecondName ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@ThirdName", PeopleSearchParameters.ThirdName ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@LastName", PeopleSearchParameters.LastName ?? (object)DBNull.Value);
+
+                    command.Parameters.AddWithValue("@Gender", PeopleSearchParameters.Gender == null ? (object)DBNull.Value : PeopleSearchParameters.Gender == EnumGender.Male ? 'M' : 'F');
+
+                    command.Parameters.AddWithValue("@Phone", PeopleSearchParameters.Phone ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@Email", PeopleSearchParameters.Email ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@CountryName", PeopleSearchParameters.CountryName ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@PageNumber", PeopleSearchParameters.PageNumber ?? 1);
+                    command.Parameters.AddWithValue("@PageSize", PeopleSearchParameters.PageSize ?? 10);
+                    command.Parameters.AddWithValue("@OrderBy", PeopleSearchParameters.OrderBy ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@OrderDirection", PeopleSearchParameters.OrderDirection ?? "ASC");
+
+
+                    await connection.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            people.Add(_mapper.Map<PersonView>(reader));
+                        }
+                    }
+                }
+            }
+
+            return people;
         }
 
         public async Task<TestLocalApplicationView> TestLocalApplicationViewAsync(int LocalApplicationID)
@@ -56,12 +102,6 @@ namespace DVLD.Infrastructure.Repository.Base.Views
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
-                    // Map parameters from DTO
-                    if (SearchParameters != null)
-                    {
-                        var parameters = Helpers.CreateSqlParametersFromObject(SearchParameters);
-                        command.Parameters.AddRange(parameters);
-                    }
 
                     await connection.OpenAsync();
 
@@ -153,7 +193,6 @@ namespace DVLD.Infrastructure.Repository.Base.Views
 
             return result;
         }
-
 
         public async Task<InternationalLicenseView?> GetInternationalLicenseViewAsync(int InternationalLicenseId)
         {

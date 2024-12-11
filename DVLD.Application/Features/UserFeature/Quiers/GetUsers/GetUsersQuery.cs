@@ -1,15 +1,16 @@
 ﻿using DVLD.Application.Common.ApiResponse;
 using DVLD.Application.DTO.Users;
+using DVLD.Domain.DomainSearchParameters;
 using MediatR;
 
 namespace DVLD.Application.Features.UserFeature.Quiers.GetUsers
 {
-    public class GetUsersQuery : IRequest<ApiResponse<List<GetUserDTO>>>
+    public class GetUsersQuery : IRequest<ApiResponse<IEnumerable<GetUserDTO>>>
     {
-        public UserSearchParamsDTO UserSearchParamsDTO { get; set; }
-        public GetUsersQuery(UserSearchParamsDTO userSearchParamsDTO)
+        public UsersSearchParameters UsersSearchParameters { get; set; }
+        public GetUsersQuery(UsersSearchParameters userSearchParamsDTO)
         {
-            UserSearchParamsDTO = userSearchParamsDTO;
+            UsersSearchParameters = userSearchParamsDTO;
         }
 
     }

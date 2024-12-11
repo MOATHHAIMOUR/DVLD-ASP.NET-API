@@ -20,6 +20,7 @@ namespace DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplication
         public async Task<ApiResponse<string>> Handle(AddNewLocalDrivingLicenseCommand request, CancellationToken cancellationToken)
         {
             LocalDrivingLicenseApplication localDrivingLicenseApplication = _mapper.Map<LocalDrivingLicenseApplication>(request.AddNewLocalDrivingLicenseDTO);
+
             var result = await _localDrivingApplicationServices.AddNewLocalDrivingLicense(localDrivingLicenseApplication);
 
             if (result.IsSuccess)

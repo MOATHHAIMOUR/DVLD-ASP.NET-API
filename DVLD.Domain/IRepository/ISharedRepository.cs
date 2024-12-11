@@ -10,6 +10,8 @@ namespace DVLD.Domain.IRepository
 
         public Task<Country> GetCountryByIdAsync(int countryId);
 
+        public Task<int> GetRowCountAsync(string tableName);
+
         public Task<bool> UpdateApplicationType(ApplicationType applicationType);
 
     }

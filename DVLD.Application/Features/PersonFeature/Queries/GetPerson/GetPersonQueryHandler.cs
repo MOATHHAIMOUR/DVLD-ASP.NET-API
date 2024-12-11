@@ -22,11 +22,13 @@ namespace DVLD.Application.Features.PersonFeature.Queries.GetPerson
 
             var result = await _personServices.GetPersonAsync(request.PersonId, request.NationalNo);
 
+            if (!result.IsSuccess)
+                return ApiResponseHandler.NotFound<GetPersonDTO>([result.Error.Message]);
 
+            var peraon = _mapper.Map<GetPersonDTO>(result.Value);
 
-            return result.IsSuccess ?
-                ApiResponseHandler.Success<GetPersonDTO>(_mapper.Map<GetPersonDTO>(result.Value)) :
-                ApiResponseHandler.NotFound<GetPersonDTO>(result.Error.Message);
+            return ApiResponseHandler.Success(peraon);
+
         }
     }
 }

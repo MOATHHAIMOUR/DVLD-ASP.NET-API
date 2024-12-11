@@ -31,11 +31,9 @@ public class GetPeopleQueryValidator : AbstractValidator<GetAllPersonsQuery>
             .MaximumLength(20)
             .WithMessage("LastName must be at most 20 characters.");
 
-        // Gender: Optional, but if present, must be 'M' or 'F'
         RuleFor(x => x.PeopleSearchParams.Gender)
-            .Must(g => g == "Male" || g == "Female")
-            .When(x => !string.IsNullOrEmpty(x.PeopleSearchParams.Gender))
-            .WithMessage("Gender must be 'Male' or 'Female'.");
+            .IsInEnum()
+            .WithMessage("The Gender must be a valid value from the EnumGender enum.");
 
         // Phone: Optional, max length 15, validate format if required
         RuleFor(x => x.PeopleSearchParams.Phone)

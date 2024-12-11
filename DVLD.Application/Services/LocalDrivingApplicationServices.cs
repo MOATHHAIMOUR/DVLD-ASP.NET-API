@@ -24,7 +24,7 @@ namespace DVLD.Application.Services
 
         public async Task<Result<string>> AddNewLocalDrivingLicense(LocalDrivingLicenseApplication LocalDrivingLicenseApplication)
         {
-            int insertedID = await _localDrivingApplicationRepository.AddAsync(LocalDrivingApplicationStoredProcedures.SP_AddNewLocalDrivingLicenseApplication, LocalDrivingLicenseApplication, IncluedPropertyInSqlPrameter: new AddNewLocalDrivingLicenseDTO());
+            int insertedID = await _localDrivingApplicationRepository.AddAsync(LocalDrivingApplicationStoredProcedures.SP_AddNewLocalDrivingLicenseApplication, LocalDrivingLicenseApplication);
 
             if (insertedID <= 0)
             {
@@ -34,16 +34,13 @@ namespace DVLD.Application.Services
             return Result<string>.Success($"Application is added successfully with id: {insertedID}");
         }
 
-        public Task<Result<int>> DetainLocalDrivingLicenseAsync(DetainedLicense detainedLicense)
-        {
-            _localDrivingApplicationRepository.DetainLocalDrivingLicenseAsync()
-        }
-
         public async Task<Result<IEnumerable<LicenseClass>>> GetLicenseClassesAsync()
         {
-            var License = await _localDrivingApplicationRepository.GetAllAsync<LicenseClass>(LocalDrivingApplicationStoredProcedures.SP_GetAllLicenseClasses);
+            //var License = await _localDrivingApplicationRepository.AddAsync(LocalDrivingApplicationStoredProcedures.SP_GetAllLicenseClasses);
 
-            return Result<IEnumerable<LicenseClass>>.Success(License);
+            //return Result<IEnumerable<LicenseClass>>.Success(License);
+
+            throw new NotImplementedException();
         }
 
         public async Task<Result<LicenseDetailsView>> GetLicenseViewAsync(int? ApplicationId, int? LicenseId)
@@ -62,9 +59,11 @@ namespace DVLD.Application.Services
 
         public async Task<Result<IEnumerable<LocalDrivingApplicationView>>> GetLocalDrivingApplicationView(SearchLocalDrivingApplicationViewDto searchLocalDrivingApplicationViewDto)
         {
-            var result = await _localDrivingApplicationRepository.GetAllAsync<LocalDrivingApplicationView>(LocalDrivingApplicationStoredProcedures.SP_GetApplicationView, searchLocalDrivingApplicationViewDto);
+            //var result = await _localDrivingApplicationRepository.GetAllAsync<LocalDrivingApplicationView>(LocalDrivingApplicationStoredProcedures.SP_GetApplicationView, searchLocalDrivingApplicationViewDto);
 
-            return Result<IEnumerable<LocalDrivingApplicationView>>.Success(result);
+            //return Result<IEnumerable<LocalDrivingApplicationView>>.Success(result);
+            throw new NotImplementedException();
+
         }
 
         public Task<bool> IsLocalDrivingLicenseExistsAsync(int licenseId)

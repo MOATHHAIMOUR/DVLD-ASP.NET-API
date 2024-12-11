@@ -22,7 +22,7 @@ namespace DVLD.Application.Features.TestFeatuer.Queries.GetTestLocalApplicationD
             if (result.IsSuccess)
                 return ApiResponseHandler.Success(result.Value!);
             else
-                return ApiResponseHandler.NotFound<TestLocalApplicationView>("the application not found");
+                return ApiResponseHandler.NotFound<TestLocalApplicationView>([result.Error.Message]);
         }
     }
 }

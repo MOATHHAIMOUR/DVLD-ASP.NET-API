@@ -15,11 +15,8 @@ namespace DVLD.Infrastructure.RepositoryProfiler
            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src["FullName"].ToString()))
            .ForMember(dest => dest.InternationalLicenseId, opt => opt.MapFrom(src => (int)src["InternationalLicenseId"]))
            .ForMember(dest => dest.NationalNo, opt => opt.MapFrom(src => src["NationalNo"].ToString()))
-           .ForMember(
-                  dest => dest.Gender,
-                  opt => opt.MapFrom(src => src["Gender"].ToString() == "M"
-                      ? EnumGender.Male : EnumGender.Female)
-              ).ForMember(dest => dest.IssueDate, opt => opt.MapFrom(src => (DateTime)src["IssueDate"]))
+           .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => (EnumGender)src["Gender"]))
+           .ForMember(dest => dest.IssueDate, opt => opt.MapFrom(src => (DateTime)src["IssueDate"]))
            .ForMember(dest => dest.ApplicationId, opt => opt.MapFrom(src => (int)src["ApplicationId"]))
            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => (bool)src["IsActive"]))
            .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => (DateTime)src["DateOfBirth"]))
@@ -33,8 +30,7 @@ namespace DVLD.Infrastructure.RepositoryProfiler
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src["FullName"]))
             .ForMember(dest => dest.LicenseId, opt => opt.MapFrom(src => src["LicenseId"]))
             .ForMember(dest => dest.NationalNo, opt => opt.MapFrom(src => src["NationalNo"]))
-            .ForMember(dest => dest.Gender, opt => opt.MapFrom(src =>
-             src["Gender"].ToString() == "M" ? EnumGender.Male : EnumGender.Female))
+            .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => (EnumGender)src["Gender"]))
             .ForMember(dest => dest.IssueDate, opt => opt.MapFrom(src => src["IssueDate"]))
             .ForMember(dest => dest.IssueReason, opt => opt.MapFrom(src => src["IssueReason"]))
             .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src["Notes"]))

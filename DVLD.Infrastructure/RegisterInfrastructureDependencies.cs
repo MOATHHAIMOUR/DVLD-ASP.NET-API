@@ -1,8 +1,7 @@
 ﻿using DVLD.Domain.IRepository;
 using DVLD.Domain.IRepository.Base;
 using DVLD.Infrastructure.Repository;
-using DVLD.Infrastructure.Repository.Base;
-using DVLD.Infrastructure.Repository.Base.Views;
+using DVLD.Infrastructure.Repository.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -17,7 +16,6 @@ namespace DVLD.Infrastructure
             // Add Auto Mapper in DI contianer
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IPersonRepository, PersonRepository>();
             services.AddScoped<ISharedRepository, SharedRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
@@ -27,6 +25,7 @@ namespace DVLD.Infrastructure
             services.AddScoped<IDBViewsRepository, DBViewsRepository>();
             services.AddScoped<IInternationalLicenseRepository, InternationalLicenseRepository>();
             services.AddScoped<IDetainedLicenseRepository, DetainedLicenseRepository>();
+            services.AddScoped<ILicenseRepository, LicenseRepository>();
 
             return services;
         }

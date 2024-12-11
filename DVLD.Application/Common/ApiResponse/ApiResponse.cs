@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using DVLD.Application.Common.Converters;
+using System.Net;
 
 namespace DVLD.Application.Common.ApiResponse
 {
@@ -39,6 +40,8 @@ namespace DVLD.Application.Common.ApiResponse
         public bool Succeeded { get; set; }   // Indicates whether the request succeeded
         public string Message { get; set; }   // Response message for the client
         public List<string> Errors { get; set; }   // Error messages, if any
+
+        [System.Text.Json.Serialization.JsonConverter(typeof(NumericEnumConverter<HttpStatusCode>))]
         public HttpStatusCode StatusCode { get; set; }   // HTTP status code for the response
         public T? Data { get; set; }   // The actual response data
     }

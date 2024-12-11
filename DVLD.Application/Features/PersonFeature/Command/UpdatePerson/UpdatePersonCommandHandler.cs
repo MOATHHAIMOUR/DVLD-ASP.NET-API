@@ -20,12 +20,13 @@ namespace DVLD.Application.Features.PersonFeature.Command.UpdatePerson
         public async Task<ApiResponse<string>> Handle(UpdatePersonCommand request, CancellationToken cancellationToken)
         {
             Person person = _mapper.Map<Person>(request.UpdatePersonDTO);
-            var result = await _personServices.UpdatePersonAsync(person);
+
+            var result = await _personServices.UpdatePersonAsync(person, request.UpdatePersonDTO.ImagePath, request.UpdatePersonDTO.ImageFile);
 
             return result.IsSuccess ?
                  ApiResponseHandler.Success(result.Value!)
                  :
-                 ApiResponseHandler.NotFound<string>(result.Error.Message);
+                 ApiResponseHandler.NotFound<string>([result.Error.Message]);
         }
     }
 }

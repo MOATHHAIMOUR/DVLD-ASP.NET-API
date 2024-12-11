@@ -1,4 +1,6 @@
-﻿namespace DVLD.Application.DTO.PersonDtos
+﻿using DVLD.Domain.Enums;
+
+namespace DVLD.Application.DTO.PersonDtos
 {
     public class GetPersonDTO
     {
@@ -8,7 +10,7 @@
         public string? SecondName { get; set; }
         public string? ThirdName { get; set; }
         public required string LastName { get; set; }
-        public required string Gender { set; get; }
+        public required EnumGender Gender { set; get; }
         public required string Phone { get; set; }
         public required string Email { get; set; }
         public required int CountryId { get; set; }
@@ -16,6 +18,6 @@
         public required string Address { set; get; }
         public required DateTime DateOfBirth { set; get; }
         public required bool IsUser { set; get; }
-        public string? ImagePath { get; set; }
+        public required string ImagePath { get; set; }
     }
 }

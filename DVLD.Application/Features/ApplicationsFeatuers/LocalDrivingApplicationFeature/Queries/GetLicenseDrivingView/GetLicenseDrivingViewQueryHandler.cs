@@ -19,7 +19,7 @@ namespace DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplication
             var result = await _localDrivingLicenseApplicationServices.GetLicenseViewAsync(request.ApplicationId, request.LicenseId);
 
             if (!result.IsSuccess)
-                return ApiResponseHandler.NotFound<LicenseDetailsView>("");
+                return ApiResponseHandler.NotFound<LicenseDetailsView>([result.Error.Message]);
 
             return ApiResponseHandler.Success(result.Value!);
         }

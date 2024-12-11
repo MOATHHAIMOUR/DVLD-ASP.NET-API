@@ -9,11 +9,11 @@ namespace DVLD.Application.Features.PersonFeature.Queries.GetPerson
             RuleFor(x => x)
                 .Must(x =>
                 {
-                    if (!x.PersonId.HasValue &&  string.IsNullOrEmpty(x.NationalNo))
+                    if (!x.PersonId.HasValue && string.IsNullOrEmpty(x.NationalNo))
                         // the error will raise
                         return false;
                     // no error
-                    return true; 
+                    return true;
                 })
                 .WithMessage("You should provide at least one value for either PersonId or NationalNo.");
         }

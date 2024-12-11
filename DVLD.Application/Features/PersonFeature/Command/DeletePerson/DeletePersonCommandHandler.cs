@@ -15,15 +15,15 @@ namespace DVLD.Application.Features.PersonFeature.Command.DeletePerson
 
         public async Task<ApiResponse<string>> Handle(DeletePersonCommand request, CancellationToken cancellationToken)
         {
-           var result =  await _personServices.DeletePersonByIdAsync(request.PersonId);
+            var result = await _personServices.DeletePersonByIdAsync(request.PersonId);
 
             if (result.IsSuccess)
             {
-                return ApiResponseHandler.Deleted<string>(message:result.Value);
+                return ApiResponseHandler.Deleted<string>(message: result.Value);
             }
             else
             {
-                return ApiResponseHandler.NotFound<string>(message: result.Error.Message);
+                return ApiResponseHandler.NotFound<string>([result.Error.Message]);
             }
 
         }

@@ -21,14 +21,14 @@ namespace DVLD.Application.Features.UserFeature.Command.AddUser
         public async Task<ApiResponse<string>> Handle(AddUserCommand request, CancellationToken cancellationToken)
         {
             User user = _mapper.Map<User>(request.AddUserDTO);
+
             var result = await _userServices.AddUserAsync(user);
 
-            ApiResponseHandler.Success("User has been successfully added to the system.");
 
             return result.IsSuccess ?
                  ApiResponseHandler.Success($"User with Id: {result.Value} has been successfully added to the system")
                  :
-                 ApiResponseHandler.NotFound<string>(result.Error.Message);
+                 ApiResponseHandler.NotFound<string>([result.Error.Message]);
         }
     }
 }

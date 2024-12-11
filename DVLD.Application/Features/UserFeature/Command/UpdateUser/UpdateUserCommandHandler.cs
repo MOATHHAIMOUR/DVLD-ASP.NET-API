@@ -27,7 +27,7 @@ namespace DVLD.Application.Features.UserFeature.Command.UpdateUser
             return result.IsSuccess ?
                  ApiResponseHandler.Success(result.Value!)
                  :
-                 ApiResponseHandler.NotFound<string>(result.Error.Message);
+                 ApiResponseHandler.NotFound<string>([result.Error.Message]);
         }
     }
 }

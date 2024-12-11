@@ -41,5 +41,10 @@ namespace DVLD.Application.Services
               :
               Result<string>.Failure(Error.RecoredNotFound($"ApplicationType was not found"));
         }
+
+        public async Task<Result<int>> GetRowCountAsync(string tableName)
+        {
+            return Result<int>.Success(await _sharedRepository.GetRowCountAsync(tableName));
+        }
     }
 }

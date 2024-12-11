@@ -1,17 +1,13 @@
+using DVLD.Domain.DomainSearchParameters;
 using DVLD.Domain.Entites;
-using DVLD.Domain.Enums;
+using DVLD.Domain.IRepository.Base;
 namespace DVLD.Domain.IRepository
 {
-    public interface IUserRepository
+    public interface IUserRepository : IGenericRepository<User>
     {
-        Task<User?> GetUserByIdOrUserName(int? UserId, string? UserName);
+        public Task<User?> GetUserByIdOrUserName(int? UserId, string? UserName);
 
-        Task<int> AddUserAsycn(User User);
+        public Task<IEnumerable<User>> GetFilterdUsersAsync(string storedProcedure, UsersSearchParameters usersSearchParameters);
 
-        Task<bool> UpdateUserAsycn(User user);
-
-        Task<bool> DeleteUserAsync(int userId);
-
-        Task<List<User>> GetUsers(int? userId = null, int? personId = null, string? userName = null, bool? isActive = null, string? sortBy = null, EnumSortDirection? sortDirection = EnumSortDirection.ASC, int? pageSize = 10, int? pageNumber = 1);
     }
 }

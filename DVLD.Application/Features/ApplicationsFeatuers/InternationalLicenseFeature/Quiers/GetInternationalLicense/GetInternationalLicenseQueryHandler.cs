@@ -20,7 +20,7 @@ namespace DVLD.Application.Features.ApplicationsFeatuers.InternationalLicenseFea
             var result = await _internationalLicenseServices.GetInternationalLicenseViewAsync(request.InternationalLicenseId);
 
             if (!result.IsSuccess)
-                return ApiResponseHandler.NotFound<InternationalLicenseView>("");
+                return ApiResponseHandler.NotFound<InternationalLicenseView>([result.Error.Message]);
 
             return ApiResponseHandler.Success(result.Value!);
 

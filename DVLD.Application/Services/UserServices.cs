@@ -2,9 +2,10 @@
 using DVLD.Application.Common.Errors;
 using DVLD.Application.Common.ResultPattern;
 using DVLD.Application.Services.IServices;
+using DVLD.Domain.DomainSearchParameters;
 using DVLD.Domain.Entites;
-using DVLD.Domain.Enums;
 using DVLD.Domain.IRepository;
+using DVLD.Domain.StoredProcdure;
 
 namespace DVLD.Application.Services
 {
@@ -28,14 +29,20 @@ namespace DVLD.Application.Services
 
         public async Task<Result<int>> AddUserAsync(User User)
         {
-            int insertedId = await _userRepository.AddUserAsycn(User);
+            // cheek if user exist 
+            var IsPersonUser = await _userRepository.IsExist(UserStoredPeocedures.IsUserExistsByPersonId, "PersonId", User.PersonId.ToString());
+
+            if (IsPersonUser)
+                return Result<int>.Failure(Error.ValidationError("Current person is already a user in system"));
+
+            int insertedId = await _userRepository.AddAsync(UserStoredPeocedures.SP__AddUser, User);
 
             return Result<int>.Success(insertedId);
         }
 
         public async Task<Result<string>> DeleteUserByIdAsync(int UserId)
         {
-            bool result = await _userRepository.DeleteUserAsync(UserId);
+            bool result = await _userRepository.DeleteAsync(UserStoredPeocedures.SP_DeleteUserById, "UserId", UserId);
 
             return result ?
                 Result<string>.Success($"User with ID {UserId} has been successfully deleted.")
@@ -45,7 +52,7 @@ namespace DVLD.Application.Services
 
         public async Task<Result<string>> UpdateUserAsync(User User)
         {
-            bool result = await _userRepository.UpdateUserAsycn(User);
+            bool result = await _userRepository.UpdateAsync(UserStoredPeocedures.SP_UpdateUser, User);
 
             return result ?
                 Result<string>.Success($"User with id: {User.UserId} is Updated successfully")
@@ -53,9 +60,9 @@ namespace DVLD.Application.Services
                 Result<string>.Failure(Error.RecoredNotFound($"user was not found"));
         }
 
-        public Task<List<User>> GetUsers(int? userId = null, int? personId = null, string? userName = null, bool? isActive = null, string? sortBy = null, EnumSortDirection? sortDirection = EnumSortDirection.ASC, int? pageSize = 10, int? pageNumber = 1)
+        public async Task<Result<IEnumerable<User>>> GetUsers(UsersSearchParameters userSearchParamsDTO)
         {
-            return _userRepository.GetUsers(userId, personId, userName, isActive, sortBy, sortDirection, pageSize, pageNumber);
+            return Result<IEnumerable<User>>.Success(await _userRepository.GetFilterdUsersAsync(UserStoredPeocedures.SP_GetUsers, userSearchParamsDTO));
         }
 
 

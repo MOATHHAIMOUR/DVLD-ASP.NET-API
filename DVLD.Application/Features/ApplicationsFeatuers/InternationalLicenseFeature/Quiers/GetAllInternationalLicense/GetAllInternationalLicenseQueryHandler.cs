@@ -23,7 +23,7 @@ namespace DVLD.Application.Features.ApplicationsFeatuers.InternationalLicenseFea
             var result = await _internationalLicenseServices.GetAllInternationalLicenses();
 
             if (!result.IsSuccess)
-                return ApiResponseHandler.NotFound<IEnumerable<GetInternationalLicenseDTO>>("");
+                return ApiResponseHandler.NotFound<IEnumerable<GetInternationalLicenseDTO>>([result.Error.Message]);
 
             var dtos = _mapper.Map<IEnumerable<GetInternationalLicenseDTO>>(result.Value);
 

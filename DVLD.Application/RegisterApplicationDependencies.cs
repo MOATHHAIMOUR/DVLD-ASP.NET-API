@@ -1,4 +1,5 @@
-﻿using DVLD.Application.Common.Behaviours;
+﻿using CloudinaryDotNet;
+using DVLD.Application.Common.Behaviours;
 using DVLD.Application.Services;
 using DVLD.Application.Services.IServices;
 using FluentValidation;
@@ -29,7 +30,9 @@ namespace DVLD.Application
             services.AddScoped<ILocalDrivingLicenseApplicationServices, LocalDrivingApplicationServices>();
             services.AddScoped<ITestServices, TestServices>();
             services.AddScoped<IInternationalLicenseServices, InternationalLicenseServices>();
-
+            services.AddScoped<IDetainLicenseServices, DetainLicenseServices>();
+            services.AddScoped<IImageServices, ImageServices>();
+            services.AddScoped<ICloudinary, Cloudinary>();
 
             return services;
         }

@@ -12,9 +12,9 @@ namespace DVLD.Application.Features.PersonFeature.Queries.GetPerson
             NationalNo = nationalNo;
         }
 
-        public int ? PersonId { get; set; } 
+        public int? PersonId { get; set; }
 
-        public string? NationalNo {  get; set; }   
+        public string? NationalNo { get; set; }
 
     }
 }

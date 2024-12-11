@@ -41,12 +41,11 @@ namespace DVLD.Application.Features.PersonFeature.Command.AddPerson
                 .MaximumLength(20)
                 .WithMessage("LastName must be at most 20 characters.");
 
-            // Gender: Required, must be 'Male' or 'Female'
             RuleFor(x => x.AddPersonDTO.Gender)
-                .NotEmpty()
+                .NotNull()
                 .WithMessage("Gender is required.")
-                .Must(g => g == "male" || g == "female")
-                .WithMessage("Gender must be 'male' or 'female'.");
+                .IsInEnum()
+                .WithMessage("The Gender must be a valid value from the EnumGender enum.");
 
             // Phone: Required, max length 10
             RuleFor(x => x.AddPersonDTO.Phone)

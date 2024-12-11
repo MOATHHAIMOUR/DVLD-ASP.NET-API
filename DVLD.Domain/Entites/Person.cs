@@ -16,8 +16,9 @@ namespace DVLD.Domain.Entites
         public required int CountryId { get; set; }
         public required string Address { set; get; }
         public required DateTime DateOfBirth { set; get; }
-        public string? ImagePath { get; set; }
-        public bool IsUser { get; set; }
+        public required string ImagePath { get; set; }
+        public required bool IsUser { get; set; }
+
 
 
         // Navigation property to relate with Users

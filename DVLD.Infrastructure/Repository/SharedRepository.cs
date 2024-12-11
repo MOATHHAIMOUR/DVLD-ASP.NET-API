@@ -131,5 +131,36 @@ namespace DVLD.Infrastructure.Repository
             }
         }
 
+        public async Task<int> GetRowCountAsync(string tableName)
+        {
+
+            await using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
+            {
+                await using (SqlCommand command = new SqlCommand("SP_GenericRowCount", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add the table name as a parameter
+                    command.Parameters.Add(new SqlParameter("@TableName", SqlDbType.NVarChar, 128)
+                    {
+                        Value = tableName
+                    });
+
+                    await connection.OpenAsync();
+
+                    // Execute the stored procedure and return the row count
+                    object result = await command.ExecuteScalarAsync();
+
+                    if (result != null && int.TryParse(result.ToString(), out int rowCount))
+                    {
+                        return rowCount;
+                    }
+                    else
+                    {
+                        throw new Exception("Failed to retrieve row count.");
+                    }
+                }
+            }
+        }
     }
 }

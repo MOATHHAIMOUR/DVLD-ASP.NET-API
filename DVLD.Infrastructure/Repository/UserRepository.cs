@@ -1,5 +1,6 @@
+using AutoMapper;
+using DVLD.Domain.DomainSearchParameters;
 using DVLD.Domain.Entites;
-using DVLD.Domain.Enums;
 using DVLD.Domain.IRepository;
 using Microsoft.Data.SqlClient;
 using System.Data;
@@ -8,57 +9,108 @@ namespace DVLD.Infrastructure.Repository
 {
     public class UserRepository : IUserRepository
     {
-        public async Task<int> AddUserAsycn(User user)
+        private readonly IMapper _mapper;
+
+        public UserRepository(IMapper mapper)
         {
-            int insertedUserId = -1;
-
-            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
-            {
-                using (SqlCommand cmd = new SqlCommand("SP__AddUser", connection))
-                {
-
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    // Add parameters to the command
-                    cmd.Parameters.AddWithValue("@PersonId", user.PersonId);
-                    cmd.Parameters.AddWithValue("@Username", user.UserName);
-                    cmd.Parameters.AddWithValue("@Password", user.Password);
-                    cmd.Parameters.AddWithValue("@IsActive", user.IsActive);
-
-                    // Open connection and execute the command
-                    await connection.OpenAsync();
-
-                    insertedUserId = Convert.ToInt32(await cmd.ExecuteScalarAsync());
-
-
-
-                }
-            }
-
-            return insertedUserId;
+            _mapper = mapper;
         }
 
-        public async Task<bool> DeleteUserAsync(int userId)
+        public async Task<int> AddAsync(string storedProcedure, User entity)
         {
-            int rowsAffected = 0;
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                using (var command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
 
-            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
+                    // Add parameters to match the stored procedure
+                    command.Parameters.AddWithValue("@UserId", entity.UserId);
+                    command.Parameters.AddWithValue("@PersonId", entity.PersonId);
+                    command.Parameters.AddWithValue("@UserName", entity.UserName);
+                    command.Parameters.AddWithValue("@Password", (object?)entity.Password ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@IsActive", entity.IsActive);
+
+                    // Open the connection
+                    await connection.OpenAsync();
+
+                    // Execute the command and get the result
+                    int result = await command.ExecuteNonQueryAsync();
+
+                    // Return the result
+                    return result;
+                }
+            }
+        }
+
+
+        public async Task<bool> DeleteAsync(string storedProcedure, string propertyName, int value)
+        {
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                using (var command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add parameter to match the stored procedure
+                    command.Parameters.AddWithValue($"@{propertyName}", value);
+
+                    // Open the connection
+                    await connection.OpenAsync();
+
+                    // Execute the command and check the number of rows affected
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                    // Return true if at least one row was affected
+                    return rowsAffected > 0;
+                }
+            }
+        }
+
+        public Task<IEnumerable<User>> GetAllAsync(string storedProcedure)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<User?> GetAsync(string storedProcedure, string propertyName, int value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<User>> GetFilterdUsersAsync(string storedProcedure, UsersSearchParameters usersSearchParameters)
+        {
+            var users = new List<User>();
+
+            using (var connection = new SqlConnection(DbSettings._connectionString))
             {
                 await connection.OpenAsync();
 
-                using (SqlCommand cmd = new SqlCommand("SP_DeleteUserById", connection))
+                using (var command = new SqlCommand(storedProcedure, connection))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    command.CommandType = CommandType.StoredProcedure;
 
-                    // Add parameter for PersonId
-                    cmd.Parameters.Add(new SqlParameter("@UserId", SqlDbType.Int) { Value = userId });
+                    // Add parameters dynamically based on UsersSearchParameters
+                    command.Parameters.AddWithValue("@UserId", usersSearchParameters.UserId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@UserName", usersSearchParameters.UserName ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@IsActive", usersSearchParameters.IsActive ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@SortBy", usersSearchParameters.SortBy ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@SortDirection", usersSearchParameters.SortDirection ?? "ASC");
+                    command.Parameters.AddWithValue("@PageSize", usersSearchParameters.PageSize ?? 10);
+                    command.Parameters.AddWithValue("@PageNumber", usersSearchParameters.PageNumber ?? 1);
 
-                    // Execute the command
-                    rowsAffected = await cmd.ExecuteNonQueryAsync();
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (reader.Read())
+                        {
+                            var user = _mapper.Map<IDataReader, User>(reader);
+
+                            users.Add(user);
+                        }
+                    }
                 }
             }
 
-            return rowsAffected > 0;
+            return users;
         }
 
         public async Task<User?> GetUserByIdOrUserName(int? UserId, string? UserName)
@@ -95,73 +147,14 @@ namespace DVLD.Infrastructure.Repository
             return user;
         }
 
-        public async Task<bool> UpdateUserAsycn(User user)
+        public Task<bool> IsExist(string storedProcedure, string propertyName, string value)
         {
-            int affectedRows = 0;
-
-            using (var connection = new SqlConnection(DbSettings._connectionString))
-            {
-                using (var cmd = new SqlCommand("SP_UpdateUser", connection))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    // Map Person object properties to stored procedure parameters
-                    cmd.Parameters.AddWithValue("@UserID", user.UserId);
-                    cmd.Parameters.AddWithValue("@UserName", user.UserName);
-                    cmd.Parameters.AddWithValue("@Password", user.Password);
-                    cmd.Parameters.AddWithValue("@IsActive", user.IsActive);
-
-
-                    // Open the connection and execute the command
-                    await connection.OpenAsync();
-                    affectedRows = await cmd.ExecuteNonQueryAsync();
-                }
-            }
-
-            return affectedRows > 0;
+            throw new NotImplementedException();
         }
 
-        public async Task<List<User>> GetUsers(int? userId = null, int? personId = null, string? userName = null, bool? isActive = null, string? sortBy = null, EnumSortDirection? sortDirection = EnumSortDirection.ASC, int? pageSize = 10, int? pageNumber = 1)
+        public Task<bool> UpdateAsync(string storedProcedure, User entity)
         {
-            List<User> users = [];
-
-            using (var connection = new SqlConnection(DbSettings._connectionString))
-            {
-                using (var command = new SqlCommand("SP_GetUsers", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    // Add parameters
-                    command.Parameters.AddWithValue("@UserId", userId.HasValue ? (object)userId.Value : DBNull.Value);
-                    command.Parameters.AddWithValue("@PersonId", personId.HasValue ? (object)personId.Value : DBNull.Value);
-                    command.Parameters.AddWithValue("@UserName", userName ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@IsActive", isActive.HasValue ? (object)isActive.Value : DBNull.Value);
-                    command.Parameters.AddWithValue("@SortBy", sortBy ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@SortDirection", sortDirection.HasValue ? sortDirection.Value == EnumSortDirection.ASC ? "ASC" : "DESC" : DBNull.Value);
-                    command.Parameters.AddWithValue("@PageSize", pageSize);
-                    command.Parameters.AddWithValue("@PageNumber", pageNumber);
-
-                    await connection.OpenAsync();
-
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            users.Add(new User
-                            {
-                                UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
-                                PersonId = reader.GetInt32(reader.GetOrdinal("PersonId")),
-                                UserName = reader.GetString(reader.GetOrdinal("UserName")),
-                                IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive"))
-                            });
-                        }
-                    }
-                }
-            }
-
-            return users;
+            throw new NotImplementedException();
         }
-
-
     }
 }

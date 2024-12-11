@@ -64,8 +64,8 @@ namespace DVLD.Application.Services
             // Add the test appointment and get the inserted ID
             int insertedId = await _testAppointmentRepository.AddAsync(
                 TestStoredProcedures.SP_AddTestAppointment,
-                testAppointment,
-                new AddTestAppintmentDTO()
+                testAppointment
+
             );
 
             return Result<string>.Success($"Test appointment created successfully with ID: {insertedId}");
@@ -93,7 +93,7 @@ namespace DVLD.Application.Services
 
         public async Task<Result<string>> AddTestResult(Test test)
         {
-            var result = await _testRepository.AddAsync(TestStoredProcedures.SP_AddTestResult, test, new AddTestDTO());
+            var result = await _testRepository.AddAsync(TestStoredProcedures.SP_AddTestResult, test);
 
             return Result<string>.Success("Test result added successfully");
         }
