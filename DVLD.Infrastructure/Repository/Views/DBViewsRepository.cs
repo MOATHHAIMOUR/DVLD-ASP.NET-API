@@ -5,6 +5,7 @@ using DVLD.Domain.IRepository.Base;
 using DVLD.Domain.StoredProcdure;
 using DVLD.Domain.views.License.InternationalLicense;
 using DVLD.Domain.views.License.LocalLicense;
+using DVLD.Domain.views.LocalDrivingApplication;
 using DVLD.Domain.views.Person;
 using DVLD.Domain.views.Test;
 using Microsoft.Data.SqlClient;
@@ -65,67 +66,83 @@ namespace DVLD.Infrastructure.Repository.Views
             return people;
         }
 
-        public async Task<TestLocalApplicationView> TestLocalApplicationViewAsync(int LocalApplicationID)
+        public async Task<IEnumerable<LocalDrivingApplicationView>> GetLocalDrivingApplicationsView(string storedProcedure, LocalDrivingApplicationsSearchParameters localDrivingApplicationsSearchParameters)
         {
-            var result = new TestLocalApplicationView();
+            var results = new List<LocalDrivingApplicationView>();
 
             using (var connection = new SqlConnection(DbSettings._connectionString))
             {
-                using (var command = new SqlCommand(LocalDrivingApplicationStoredProcedures.SP_GetLocalTestApplicationDetails, connection))
+                using (var command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add parameters
+                    command.Parameters.AddWithValue("@LocalDrivingLicenseApplicationID", (object?)localDrivingApplicationsSearchParameters.LocalDrivingLicenseApplicationID ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@ClassName", (object?)localDrivingApplicationsSearchParameters.ClassName ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@NationalNo", (object?)localDrivingApplicationsSearchParameters.NationalNo ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@FullName", (object?)localDrivingApplicationsSearchParameters.FullName ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@ApplicationDate", (object?)localDrivingApplicationsSearchParameters.ApplicationDate ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@PassedTests", (object?)localDrivingApplicationsSearchParameters.PassedTests ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@ApplicationStatus", (object?)localDrivingApplicationsSearchParameters.ApplicationStatus ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@OrderBy", (object?)localDrivingApplicationsSearchParameters.OrderBy ?? "ID");
+                    command.Parameters.AddWithValue("@OrderDirection", (object?)localDrivingApplicationsSearchParameters.OrderDirection ?? "ASC");
+                    command.Parameters.AddWithValue("@PageSize", localDrivingApplicationsSearchParameters.PageSize);
+                    command.Parameters.AddWithValue("@PageNumber", localDrivingApplicationsSearchParameters.PageNumber);
+
+                    await connection.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var applicationView = _mapper.Map<LocalDrivingApplicationView>(reader);
+                            results.Add(applicationView);
+                        }
+                    }
+                }
+            }
+
+            return results;
+        }
+
+        public async Task<TestAppointmentDetailInfo?> GetTestAppointmentDetailInfo(int LocalApplicationID)
+        {
+            TestAppointmentDetailInfo? details = null;
+
+            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
+            {
+                using (SqlCommand command = new SqlCommand("SP_GetTestDrivingLicenseApplicationDetails", connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
                     // Add the parameter for the stored procedure
-                    command.Parameters.AddWithValue("@LocalDrivingLicenseApplicationId", LocalApplicationID);
-
-                    connection.Open();
-                    using (var reader = await command.ExecuteReaderAsync())
+                    command.Parameters.Add(new SqlParameter("@LocalDrivingApplicationId", SqlDbType.Int)
                     {
-                        if (await reader.ReadAsync())
-                        {
-                            result = _mapper.Map<TestLocalApplicationView>(reader);
-                        }
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        public async Task<IEnumerable<TestAppointmentView>> GetTestAppointmentViewAsync(object SearchParameters)
-        {
-            List<TestAppointmentView> appointments = [];
-
-            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
-            {
-                using (SqlCommand command = new SqlCommand("SP_GetTestAppointmentView", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-
+                        Value = LocalApplicationID
+                    });
 
                     await connection.OpenAsync();
 
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
                     {
-                        while (await reader.ReadAsync())
+                        if (await reader.ReadAsync())
                         {
-                            var appointment = _mapper.Map<TestAppointmentView>(reader);
-                            appointments.Add(appointment);
+                            details = _mapper.Map<TestAppointmentDetailInfo>(reader);
                         }
                     }
                 }
             }
 
-            return appointments;
+            return details;
         }
 
-        public async Task<ScheduleTestView> GetScheduleTestInfoAsync(int localDrivingLicenseApplicationId, int testTypeId)
+        public async Task<ScheduleAndTake_TestView?> GetScheduleTestInfoAsync(int localDrivingLicenseApplicationId, int testTypeId)
         {
-            var result = new ScheduleTestView();
+            ScheduleAndTake_TestView? ScheduleTestView = null;
 
             using (var connection = new SqlConnection(DbSettings._connectionString))
             {
-                using (var command = new SqlCommand(ViewsStoredProcedures.SP_GetScheduleTestData, connection))
+                using (var command = new SqlCommand(ViewsStoredProcedures.SP_GetTake_ScheduleTestData, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
@@ -140,51 +157,38 @@ namespace DVLD.Infrastructure.Repository.Views
                         if (await reader.ReadAsync())
                         {
                             // Use AutoMapper to map IDataRecord to ScheduleTestView
-                            result = _mapper.Map<ScheduleTestView>(reader);
+                            ScheduleTestView = _mapper.Map<ScheduleAndTake_TestView>(reader);
                         }
                     }
                 }
             }
 
-            return result;
+            return ScheduleTestView;
         }
 
-        public async Task<LicenseDetailsView?> GetLicenseByApplicationIdOrLicenseIdAsync(int? ApplicationId, int? LicenseId)
+        public async Task<LicenseDetailsView?> GetLicenseInfo(int? applicationId, int? licenseId, int? localDrivingApplicationId)
         {
             LicenseDetailsView? result = null;
 
-            using (var connection = new SqlConnection(DbSettings._connectionString))
-            {
-                string stored = "";
-                string parameter = "";
-                int Id = 0;
-                if (ApplicationId.HasValue)
-                {
-                    stored = "SP_GetLicenseByApplicationId";
-                    parameter = "@ApplicationId";
-                    Id = ApplicationId.Value;
-                }
-                else
-                {
-                    stored = "SP_GetLicenseByLicenseId";
-                    parameter = "@LicenseId";
-                    Id = LicenseId!.Value;
-                }
 
-                using (var command = new SqlCommand(stored, connection))
+            using (var connection = new SqlConnection(DbSettings._connectionString)) // Ensure the connection string is properly initialized
+            {
+                using (var command = new SqlCommand("SP_GetLocalLicenseView", connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
+                    // Add parameters with proper null handling
+                    command.Parameters.AddWithValue("@ApplicationId", applicationId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@LicenseId", licenseId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@LocalDrivingApplicationId", localDrivingApplicationId ?? (object)DBNull.Value);
 
-
-                    command.Parameters.AddWithValue(parameter, Id);
-
-                    connection.Open();
+                    await connection.OpenAsync();
 
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
+                            // Assuming you have a mapper to convert the reader to the desired view
                             result = _mapper.Map<LicenseDetailsView>(reader);
                         }
                     }
@@ -193,6 +197,7 @@ namespace DVLD.Infrastructure.Repository.Views
 
             return result;
         }
+
 
         public async Task<InternationalLicenseView?> GetInternationalLicenseViewAsync(int InternationalLicenseId)
         {
@@ -220,5 +225,32 @@ namespace DVLD.Infrastructure.Repository.Views
             return null;
         }
 
+        public async Task<IEnumerable<TestAppointmentView>> GetTestAppointmentsPerTestType(int LocalApplicationID, int TestTypeId)
+        {
+            var results = new List<TestAppointmentView>();
+
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                using (var command = new SqlCommand("SP_GetTestAppoinments", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@LocalDrivingApplicationId", LocalApplicationID);
+                    command.Parameters.AddWithValue("@TestTypeId", TestTypeId);
+
+                    await connection.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            results.Add(_mapper.Map<TestAppointmentView>(reader));
+                        }
+                    }
+                }
+            }
+
+            return results;
+        }
     }
 }

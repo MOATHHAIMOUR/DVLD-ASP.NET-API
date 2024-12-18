@@ -12,6 +12,8 @@ namespace DVLD.Domain.IRepository
 
         public Task<int> GetRowCountAsync(string tableName);
 
+        public Task<IEnumerable<LicenseClass>> GetAllLicensesClassesAsync();
+
         public Task<bool> UpdateApplicationType(ApplicationType applicationType);
 
     }

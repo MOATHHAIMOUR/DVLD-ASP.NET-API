@@ -16,10 +16,20 @@ namespace DVLD.Domain.IRepository
         int createdByUserId,
         DateTime expirationDate);
 
+        public Task<bool> CancelLocalDrivingApplication(int localDrivingApplication);
 
+        public Task<bool> IsLocalDrivingApplicationCompletedAsync(int localDrivingApplication);
+
+        public Task<bool> IsLocalDrivingApplicationCompeletedOrCancelled(int LocalDrivingApplicationId);
 
         public Task<bool> IsLicenseDetainedAsync(int licenseId);
 
         public Task<bool> IsLocalDrivingLicenseExistsAsync(int licenseId);
+
+
+
+        public Task<bool> IsApplicantHasAcActiveApplicationPerApplicationType(int personId, int applicationTypeId);
+        public Task<bool> IsApplicanHasAlreadyActiveLicenseWithSameType(int personId, int applicationTypeId);
+
     }
 }

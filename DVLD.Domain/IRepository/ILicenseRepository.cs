@@ -5,5 +5,6 @@ namespace DVLD.Domain.IRepository
 {
     public interface ILicenseRepository : IGenericRepository<License>
     {
+
     }
 }

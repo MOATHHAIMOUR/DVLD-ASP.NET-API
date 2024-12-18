@@ -1,5 +1,4 @@
-﻿using CloudinaryDotNet;
-using DVLD.Application.Common.Behaviours;
+﻿using DVLD.Application.Common.Behaviours;
 using DVLD.Application.Services;
 using DVLD.Application.Services.IServices;
 using FluentValidation;
@@ -32,7 +31,8 @@ namespace DVLD.Application
             services.AddScoped<IInternationalLicenseServices, InternationalLicenseServices>();
             services.AddScoped<IDetainLicenseServices, DetainLicenseServices>();
             services.AddScoped<IImageServices, ImageServices>();
-            services.AddScoped<ICloudinary, Cloudinary>();
+            services.AddScoped<ILicnsesServices, LicnsesServices>();
+            services.AddScoped<IJWTAuthenticationWithRefreshTokenServices, JWTAuthenticationWithRefreshTokenServices>();
 
             return services;
         }

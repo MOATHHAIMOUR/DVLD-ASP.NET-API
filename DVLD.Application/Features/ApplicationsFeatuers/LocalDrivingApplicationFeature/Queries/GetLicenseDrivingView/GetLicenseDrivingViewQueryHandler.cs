@@ -7,16 +7,17 @@ namespace DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplication
 {
     public class GetLicenseDrivingViewQueryHandler : IRequestHandler<GetLicenseDrivingViewQuery, ApiResponse<LicenseDetailsView>>
     {
-        private readonly ILocalDrivingLicenseApplicationServices _localDrivingLicenseApplicationServices;
+
+        private readonly ILocalDrivingLicenseApplicationServices localDrivingLicenseApplicationServices;
 
         public GetLicenseDrivingViewQueryHandler(ILocalDrivingLicenseApplicationServices localDrivingLicenseApplicationServices)
         {
-            _localDrivingLicenseApplicationServices = localDrivingLicenseApplicationServices;
+            this.localDrivingLicenseApplicationServices = localDrivingLicenseApplicationServices;
         }
 
         public async Task<ApiResponse<LicenseDetailsView>> Handle(GetLicenseDrivingViewQuery request, CancellationToken cancellationToken)
         {
-            var result = await _localDrivingLicenseApplicationServices.GetLicenseViewAsync(request.ApplicationId, request.LicenseId);
+            var result = await localDrivingLicenseApplicationServices.GetLicenseViewAsync(request.ApplicationId, request.LicenseId, request.LocalDrivingApplicationId);
 
             if (!result.IsSuccess)
                 return ApiResponseHandler.NotFound<LicenseDetailsView>([result.Error.Message]);

@@ -4,20 +4,22 @@ namespace DVLD.Domain.views.License.LocalLicense
 {
     public class LicenseDetailsView
     {
-        public EnumLicenseClass LicenseClassId { get; set; }
-        public string ClassName { get; set; } = string.Empty;
-        public string FullName { get; set; } = string.Empty;
-        public int LicenseId { get; set; }
-        public string NationalNo { get; set; } = string.Empty;
-        public EnumGender Gender { get; set; }
-        public DateTime IssueDate { get; set; }
-        public int? IssueReason { get; set; }
-        public string Notes { get; set; } = string.Empty;
-        public bool IsActive { get; set; }
-        public DateTime DateOfBirth { get; set; }
-        public int DriverId { get; set; }
-        public DateTime ExpirationDate { get; set; }
-        public bool IsDetain { get; set; }
+        public required EnumLicenseClass LicenseClassId { get; set; }
+        public required int LocalDrivingLicenseApplicationId { get; set; }
+        public required string ClassName { get; set; } = string.Empty;
+        public required string FullName { get; set; } = string.Empty;
+        public required int LicenseId { get; set; }
+        public required string NationalNo { get; set; } = string.Empty;
+        public required EnumGender Gender { get; set; }
+        public required DateTime IssueDate { get; set; }
+        public required int IssueReason { get; set; }
+        public string? Notes { get; set; } = string.Empty;
+        public required bool IsActive { get; set; }
+        public required DateTime DateOfBirth { get; set; }
+        public required int DriverId { get; set; }
+        public required DateTime ExpirationDate { get; set; }
+        public required bool IsDetain { get; set; }
+        public required string ImagePath { get; set; }
 
     }
 }

@@ -16,13 +16,13 @@ namespace DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplication
 
         public async Task<ApiResponse<IEnumerable<LocalDrivingApplicationView>>> Handle(GetLocalDrivingApplicationViewQuery request, CancellationToken cancellationToken)
         {
-            var localDrivingApplications = (await _localDrivingApplicationServices.GetLocalDrivingApplicationView(request.SearchLocalDrivingApplicationViewDto)).Value;
+            var localDrivingApplications = (await _localDrivingApplicationServices.GetLocalDrivingApplicationView(request.LocalDrivingApplicationsSearchParameters)).Value;
 
             // Count the number of people
             int numberOfLocalDrivingApplication = localDrivingApplications?.Count() ?? 0;
 
             // Calculate the total pages based on the page size
-            int totalPages = (int)Math.Ceiling(numberOfLocalDrivingApplication / Convert.ToDouble(request.SearchLocalDrivingApplicationViewDto.PageSize));
+            int totalPages = (int)Math.Ceiling(numberOfLocalDrivingApplication / Convert.ToDouble(request.LocalDrivingApplicationsSearchParameters.PageSize));
 
             return ApiResponseHandler.Success(localDrivingApplications ?? [], meta: new
             {

@@ -29,7 +29,7 @@ namespace DVLD.Application.Services
             if (!isValid)
                 return Result<(int ApplicationId, int InternationalLicenseId)>.Failure(Error.ValidationError("Driver does not have an Ordinary Local Driving License to create an International License"));
 
-            LicenseDetailsView licenseDetailsView = (await _dBViewsRepository.GetLicenseByApplicationIdOrLicenseIdAsync(null, licenseId))!;
+            LicenseDetailsView licenseDetailsView = (await _dBViewsRepository.GetLicenseInfo(null, licenseId, null))!;
 
             // Check if the driver already has an international license
             bool hasInternationalLicense = await _internationalLicenseRepository.HasInternationalLicenseAsync(licenseDetailsView.DriverId);

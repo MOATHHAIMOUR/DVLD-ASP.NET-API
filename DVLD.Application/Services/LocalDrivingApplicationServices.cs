@@ -2,6 +2,7 @@
 using DVLD.Application.Common.ResultPattern;
 using DVLD.Application.DTO.LocalDrivingApplicationDtos;
 using DVLD.Application.Services.IServices;
+using DVLD.Domain.DomainSearchParameters;
 using DVLD.Domain.Entites;
 using DVLD.Domain.IRepository;
 using DVLD.Domain.IRepository.Base;
@@ -15,23 +16,67 @@ namespace DVLD.Application.Services
     {
         private readonly ILocalDrivingApplicationRepository _localDrivingApplicationRepository;
         private readonly IDBViewsRepository _dBViewsRepository;
+        private readonly ITestRepository _testRepository;
+        private readonly ILicenseRepository _licenseRepository;
 
-        public LocalDrivingApplicationServices(ILocalDrivingApplicationRepository localDrivingApplicationRepository, IDBViewsRepository dBViewsRepository)
+        public LocalDrivingApplicationServices(ILocalDrivingApplicationRepository localDrivingApplicationRepository, IDBViewsRepository dBViewsRepository, ITestRepository testRepository, ILicenseRepository licenseRepository)
         {
             _localDrivingApplicationRepository = localDrivingApplicationRepository;
             _dBViewsRepository = dBViewsRepository;
+            _testRepository = testRepository;
+            _licenseRepository = licenseRepository;
         }
 
-        public async Task<Result<string>> AddNewLocalDrivingLicense(LocalDrivingLicenseApplication LocalDrivingLicenseApplication)
+        public async Task<Result<string>> AddNewLocalDrivingLicenseApplication(LocalDrivingLicenseApplication localDrivingLicenseApplication)
         {
-            int insertedID = await _localDrivingApplicationRepository.AddAsync(LocalDrivingApplicationStoredProcedures.SP_AddNewLocalDrivingLicenseApplication, LocalDrivingLicenseApplication);
+            // Check if the person already has a license of the same type
+            bool hasActiveLicense = await _localDrivingApplicationRepository.IsApplicanHasAlreadyActiveLicenseWithSameType(
+                localDrivingLicenseApplication.Application.ApplicantPersonId,
+                (int)localDrivingLicenseApplication.LicenseClassId
+            );
+
+            if (hasActiveLicense)
+            {
+                return Result<string>.Failure(Error.ValidationError("This person already has a license of the same type."));
+            }
+
+            // Check if the person already has an active local driving license application
+            bool hasActiveApplication = await _localDrivingApplicationRepository.IsApplicantHasAcActiveApplicationPerApplicationType(
+                localDrivingLicenseApplication.Application.ApplicantPersonId,
+                (int)localDrivingLicenseApplication.LicenseClassId
+            );
+
+            if (hasActiveApplication)
+            {
+                return Result<string>.Failure(Error.ValidationError("This person already has an active application with the same license type."));
+            }
+
+
+
+            // Add the new local driving license application
+            int insertedID = await _localDrivingApplicationRepository.AddAsync(
+                LocalDrivingApplicationStoredProcedures.SP_AddNewLocalDrivingLicenseApplication,
+                localDrivingLicenseApplication
+            );
 
             if (insertedID <= 0)
             {
-                return Result<string>.Failure(Error.ValidationError("This Person is already has an active application with the same license type."));
+                return Result<string>.Failure(Error.ValidationError("Failed to add the application. Please try again."));
             }
 
-            return Result<string>.Success($"Application is added successfully with id: {insertedID}");
+            return Result<string>.Success($"Application is added successfully with ID: {insertedID}");
+        }
+
+        public async Task<Result<string>> CancelLocalDrivingApplication(int localDrivingApplicationId)
+        {
+
+            bool isApplicationCompleted = await _localDrivingApplicationRepository.IsLocalDrivingApplicationCompletedAsync(localDrivingApplicationId);
+            if (isApplicationCompleted)
+                return Result<string>.Failure(Error.ValidationError("The application is completed can't cancel it"));
+
+            var result = await _localDrivingApplicationRepository.CancelLocalDrivingApplication(localDrivingApplicationId);
+
+            return Result<string>.Success("Application is Cancelled successfully");
         }
 
         public async Task<Result<IEnumerable<LicenseClass>>> GetLicenseClassesAsync()
@@ -43,9 +88,24 @@ namespace DVLD.Application.Services
             throw new NotImplementedException();
         }
 
-        public async Task<Result<LicenseDetailsView>> GetLicenseViewAsync(int? ApplicationId, int? LicenseId)
+
+        public async Task<Result<string>> AddLicensesAsync(License license)
         {
-            var licenseView = await _dBViewsRepository.GetLicenseByApplicationIdOrLicenseIdAsync(ApplicationId, LicenseId);
+            bool isApplicantPassAllTests = await _testRepository.IsApplicantPassAllTests(TestStoredProcedures.SP_IsApplicantPassAllTests, license.ApplicationId);
+
+
+
+            if (!isApplicantPassAllTests)
+                return Result<string>.Failure(Error.ValidationError("Isuuing Licenses Require Passing All Tests"));
+
+            int insertedId = await _licenseRepository.AddAsync(LicensesStoredProcedure.SP_AddNewLocalLicense, license);
+
+            return Result<string>.Success($"New License with Id ${insertedId} added successfully.");
+        }
+
+        public async Task<Result<LicenseDetailsView>> GetLicenseViewAsync(int? ApplicationId, int? LicenseId, int? localDrivingApplicationId)
+        {
+            var licenseView = await _dBViewsRepository.GetLicenseInfo(ApplicationId, LicenseId, localDrivingApplicationId);
 
             if (licenseView == null)
             {
@@ -57,12 +117,14 @@ namespace DVLD.Application.Services
             }
         }
 
-        public async Task<Result<IEnumerable<LocalDrivingApplicationView>>> GetLocalDrivingApplicationView(SearchLocalDrivingApplicationViewDto searchLocalDrivingApplicationViewDto)
-        {
-            //var result = await _localDrivingApplicationRepository.GetAllAsync<LocalDrivingApplicationView>(LocalDrivingApplicationStoredProcedures.SP_GetApplicationView, searchLocalDrivingApplicationViewDto);
 
-            //return Result<IEnumerable<LocalDrivingApplicationView>>.Success(result);
-            throw new NotImplementedException();
+
+
+        public async Task<Result<IEnumerable<LocalDrivingApplicationView>>> GetLocalDrivingApplicationView(LocalDrivingApplicationsSearchParameters localDrivingApplicationsSearchParameters)
+        {
+            var result = await _dBViewsRepository.GetLocalDrivingApplicationsView(LocalDrivingApplicationStoredProcedures.SP_GetApplicationView, localDrivingApplicationsSearchParameters);
+
+            return Result<IEnumerable<LocalDrivingApplicationView>>.Success(result);
 
         }
 
@@ -73,7 +135,7 @@ namespace DVLD.Application.Services
 
         public async Task<Result<RenewLocalLicenseResultDTO>> RenewLocalDrivingLicenseAsync(int licenseId, int createdByUserId, DateTime expirationDate)
         {
-            LicenseDetailsView? license = await _dBViewsRepository.GetLicenseByApplicationIdOrLicenseIdAsync(null, licenseId);
+            LicenseDetailsView? license = await _dBViewsRepository.GetLicenseInfo(null, licenseId, null);
 
             if (license == null)
                 return Result<RenewLocalLicenseResultDTO>.Failure(Error.RecoredNotFound("License is not found"));

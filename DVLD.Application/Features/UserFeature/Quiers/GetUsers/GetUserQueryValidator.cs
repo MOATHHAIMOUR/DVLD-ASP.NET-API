@@ -19,17 +19,17 @@ namespace DVLD.Application.Features.UserFeature.Quiers.GetUsers
                 .MaximumLength(20).WithMessage("UserName must not exceed 20 characters.")
                 .When(x => !string.IsNullOrEmpty(x.UsersSearchParameters.UserName));
 
-            RuleFor(x => x.UsersSearchParameters.SortBy)
+            RuleFor(x => x.UsersSearchParameters.OrderBy)
                 .Must(sortBy => IsValidSortField(sortBy))
                 .WithMessage("Invalid SortBy field.")
-                .When(x => !string.IsNullOrEmpty(x.UsersSearchParameters.SortBy));
+                .When(x => !string.IsNullOrEmpty(x.UsersSearchParameters.OrderBy));
 
-            RuleFor(x => x.UsersSearchParameters.SortDirection)
+            RuleFor(x => x.UsersSearchParameters.OrderDirection)
                 .Must(sortDirection =>
                     sortDirection.Equals("asc", StringComparison.OrdinalIgnoreCase) ||
                     sortDirection.Equals("desc", StringComparison.OrdinalIgnoreCase))
                 .WithMessage("SortDireaction must be 'asc' or 'desc'.")
-                .When(x => !string.IsNullOrEmpty(x.UsersSearchParameters.SortDirection));
+                .When(x => !string.IsNullOrEmpty(x.UsersSearchParameters.OrderDirection));
 
             RuleFor(x => x.UsersSearchParameters.PageSize)
                 .GreaterThan(0).WithMessage("PageSize must be greater than 0.")

@@ -7,7 +7,6 @@
         public static string SP_AddNewLocalDrivingLicenseApplication => "SP_AddNewLocalDrivingLicenseApplication";
         public static string SP_GetAllLicenseClasses => "SP_GetAllLicenseClasses";
         public static string SP_GetLocalTestApplicationDetails => "SP_GetLocalTestApplicationDetails";
-
-
+        public static string SP_IsLocalDrivingApplicationCompeletedOrCancelled => "SP_IsLocalDrivingApplicationCompeletedOrCancelled";
     }
 }

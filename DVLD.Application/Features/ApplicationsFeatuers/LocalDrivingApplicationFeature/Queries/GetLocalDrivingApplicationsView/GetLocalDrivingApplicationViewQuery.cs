@@ -1,5 +1,5 @@
 ﻿using DVLD.Application.Common.ApiResponse;
-using DVLD.Application.DTO.LocalDrivingApplicationDtos;
+using DVLD.Domain.DomainSearchParameters;
 using DVLD.Domain.views.LocalDrivingApplication;
 using MediatR;
 
@@ -7,11 +7,13 @@ namespace DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplication
 {
     public class GetLocalDrivingApplicationViewQuery : IRequest<ApiResponse<IEnumerable<LocalDrivingApplicationView>>>
     {
-        public SearchLocalDrivingApplicationViewDto SearchLocalDrivingApplicationViewDto { set; get; }
-        public GetLocalDrivingApplicationViewQuery(SearchLocalDrivingApplicationViewDto searchLocalDrivingApplicationViewDto)
+        public GetLocalDrivingApplicationViewQuery(LocalDrivingApplicationsSearchParameters localDrivingApplicationsSearchParameters)
         {
-            SearchLocalDrivingApplicationViewDto = searchLocalDrivingApplicationViewDto;
+            LocalDrivingApplicationsSearchParameters = localDrivingApplicationsSearchParameters;
         }
+
+        public LocalDrivingApplicationsSearchParameters LocalDrivingApplicationsSearchParameters { set; get; }
+
 
     }
 }

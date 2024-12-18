@@ -25,7 +25,6 @@ namespace DVLD.Infrastructure.Repository
                     command.CommandType = CommandType.StoredProcedure;
 
                     // Add parameters to match the stored procedure
-                    command.Parameters.AddWithValue("@UserId", entity.UserId);
                     command.Parameters.AddWithValue("@PersonId", entity.PersonId);
                     command.Parameters.AddWithValue("@UserName", entity.UserName);
                     command.Parameters.AddWithValue("@Password", (object?)entity.Password ?? DBNull.Value);
@@ -42,7 +41,6 @@ namespace DVLD.Infrastructure.Repository
                 }
             }
         }
-
 
         public async Task<bool> DeleteAsync(string storedProcedure, string propertyName, int value)
         {
@@ -67,16 +65,6 @@ namespace DVLD.Infrastructure.Repository
             }
         }
 
-        public Task<IEnumerable<User>> GetAllAsync(string storedProcedure)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<User?> GetAsync(string storedProcedure, string propertyName, int value)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<User>> GetFilterdUsersAsync(string storedProcedure, UsersSearchParameters usersSearchParameters)
         {
             var users = new List<User>();
@@ -93,8 +81,8 @@ namespace DVLD.Infrastructure.Repository
                     command.Parameters.AddWithValue("@UserId", usersSearchParameters.UserId ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@UserName", usersSearchParameters.UserName ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@IsActive", usersSearchParameters.IsActive ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@SortBy", usersSearchParameters.SortBy ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@SortDirection", usersSearchParameters.SortDirection ?? "ASC");
+                    command.Parameters.AddWithValue("@OrderBy", usersSearchParameters.OrderBy ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@OrderDirection", usersSearchParameters.OrderDirection ?? "ASC");
                     command.Parameters.AddWithValue("@PageSize", usersSearchParameters.PageSize ?? 10);
                     command.Parameters.AddWithValue("@PageNumber", usersSearchParameters.PageNumber ?? 1);
 
@@ -112,6 +100,18 @@ namespace DVLD.Infrastructure.Repository
 
             return users;
         }
+
+
+        public Task<IEnumerable<User>> GetAllAsync(string storedProcedure)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<User?> GetAsync(string storedProcedure, string propertyName, int value)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public async Task<User?> GetUserByIdOrUserName(int? UserId, string? UserName)
         {
@@ -146,15 +146,53 @@ namespace DVLD.Infrastructure.Repository
 
             return user;
         }
-
-        public Task<bool> IsExist(string storedProcedure, string propertyName, string value)
+        public async Task<bool> IsExist(string storedProcedure, string propertyName, string value)
         {
-            throw new NotImplementedException();
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                using (var command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add parameter dynamically
+                    command.Parameters.AddWithValue($"@{propertyName}", value);
+
+                    // Open the connection
+                    await connection.OpenAsync();
+
+                    // Execute the command and retrieve the result
+                    var result = await command.ExecuteScalarAsync();
+
+                    // Return true if the result is 1, false otherwise
+                    return Convert.ToInt32(result) == 1;
+                }
+            }
         }
-
-        public Task<bool> UpdateAsync(string storedProcedure, User entity)
+        public async Task<bool> UpdateAsync(string storedProcedure, User entity)
         {
-            throw new NotImplementedException();
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                using (var command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add parameters to match the stored procedure
+                    command.Parameters.AddWithValue("@UserId", entity.UserId);
+                    command.Parameters.AddWithValue("@PersonId", entity.PersonId);
+                    command.Parameters.AddWithValue("@UserName", entity.UserName);
+                    command.Parameters.AddWithValue("@Password", (object?)entity.Password ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@IsActive", entity.IsActive);
+
+                    // Open the connection
+                    await connection.OpenAsync();
+
+                    // Execute the command and check the number of rows affected
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                    // Return true if at least one row was affected
+                    return rowsAffected > 0;
+                }
+            }
         }
     }
 }

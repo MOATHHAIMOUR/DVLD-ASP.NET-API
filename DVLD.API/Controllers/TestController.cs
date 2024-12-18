@@ -6,8 +6,8 @@ using DVLD.Application.DTO.Users;
 using DVLD.Application.Features.TestFeatuer.Commandes.AddTestAppointment;
 using DVLD.Application.Features.TestFeatuer.Commandes.AddTestResult;
 using DVLD.Application.Features.TestFeatuer.Queries.GetScheduleTestInfoAsync;
-using DVLD.Application.Features.TestFeatuer.Queries.GetTestAppointmentViewQuery;
-using DVLD.Application.Features.TestFeatuer.Queries.GetTestLocalApplicationDetail;
+using DVLD.Application.Features.TestFeatuer.Queries.GetTestAppointmentDetailInfo;
+using DVLD.Domain.views.Test;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,21 +23,22 @@ namespace DVLD.API.Controllers
         [HttpGet(Router.TestRouting.GetTestLocalDrivingLicenseDetail)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ApiResponse<GetUserDTO>>> GetTestLocalDrivingLicenseDetail([FromRoute] int localDrivingApplication)
+        public async Task<ActionResult<ApiResponse<TestAppointmentDetailInfo>>> GetTestLocalDrivingLicenseDetail([FromRoute] int localDrivingApplication)
         {
             var response = await _mediator.Send(new GetTestLocalDrivingLicenseApplicationDetailQuery(localDrivingApplication));
             return NewResult(response);
         }
 
-
-        [HttpGet(Router.TestRouting.GetTestAppoimentView)]
+        [HttpGet(Router.TestRouting.GetTestAppoiments)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ApiResponse<GetUserDTO>>> GetTestAppoimentView([FromQuery] SearchTestAppointmentViewDTO SearchTestAppointmentViewDTO)
+        public async Task<ActionResult<ApiResponse<IEnumerable<TestAppointmentView>>>> GetTestAppoiments([FromQuery] int localDrivingApplication, [FromQuery] int TestTypeId)
         {
-            var response = await _mediator.Send(new GetTestAppointmentViewQuery(SearchTestAppointmentViewDTO));
+            var response = await _mediator.Send(new GetTestAppointmentsQuery(localDrivingApplication, TestTypeId));
             return NewResult(response);
         }
+
+
 
         [HttpGet(Router.TestRouting.GetScheduleTestInfoView)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -48,7 +49,6 @@ namespace DVLD.API.Controllers
             return NewResult(response);
         }
 
-
         [HttpPost(Router.TestRouting.AddTestAppointment)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -57,7 +57,6 @@ namespace DVLD.API.Controllers
             var response = await _mediator.Send(new AddTestAppointmentCommand(AddTestAppintmentDTO));
             return NewResult(response);
         }
-
 
         [HttpPost(Router.TestRouting.AddTestResult)]
         [ProducesResponseType(StatusCodes.Status200OK)]

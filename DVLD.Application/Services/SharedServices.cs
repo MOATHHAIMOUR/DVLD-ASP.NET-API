@@ -22,6 +22,15 @@ namespace DVLD.Application.Services
             return Result<List<Country>>.Success(countries);
         }
 
+        public async Task<Result<IEnumerable<LicenseClass>>> GetAllLicensesClassesAsync()
+        {
+            var licensesClasces = await _sharedRepository.GetAllLicensesClassesAsync();
+
+            return Result<IEnumerable<LicenseClass>>.Success(licensesClasces);
+        }
+
+
+
         public async Task<Country> GetCountryByIdAsync(int countryId)
         {
             return await _sharedRepository.GetCountryByIdAsync(countryId);

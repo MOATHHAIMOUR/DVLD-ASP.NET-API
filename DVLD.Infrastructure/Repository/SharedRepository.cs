@@ -1,5 +1,7 @@
-﻿using DVLD.Domain.Entites;
+﻿using AutoMapper;
+using DVLD.Domain.Entites;
 using DVLD.Domain.IRepository;
+using DVLD.Domain.StoredProcdure;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -7,6 +9,39 @@ namespace DVLD.Infrastructure.Repository
 {
     public class SharedRepository : ISharedRepository
     {
+        private readonly IMapper _mapper;
+
+        public SharedRepository(IMapper mapper)
+        {
+            _mapper = mapper;
+        }
+
+        public async Task<IEnumerable<LicenseClass>> GetAllLicensesClassesAsync()
+        {
+            var licenseClasses = new List<LicenseClass>();
+
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand(SahredStoredProcedures.SP_GetAllLicenseClasses, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            licenseClasses.Add(_mapper.Map<LicenseClass>(reader));
+                        }
+                    }
+                }
+            }
+
+            return licenseClasses;
+        }
+
+
 
         public async Task<List<Country>> GetAllCountriesAsync()
         {
@@ -43,9 +78,9 @@ namespace DVLD.Infrastructure.Repository
 
         public async Task<List<ApplicationType>> GetAllApplicationTypesAsync()
         {
-            List<ApplicationType> applicationTypes = new List<ApplicationType>();
+            List<ApplicationType> applicationTypes = [];
 
-            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
+            using (SqlConnection connection = new(DbSettings._connectionString))
             {
                 // Use the stored procedure
                 SqlCommand command = new SqlCommand("SP_GetAllApplicationTypes", connection)
@@ -161,6 +196,11 @@ namespace DVLD.Infrastructure.Repository
                     }
                 }
             }
+        }
+
+        public Task<IEnumerable<LicenseClass>> GetAllAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

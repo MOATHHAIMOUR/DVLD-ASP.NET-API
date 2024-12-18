@@ -44,18 +44,21 @@ namespace DVLD.API.AppMetaData
 
             private const string prefix = Rule + "LocalDrivingApplication";
 
-            public const string GetLocalDrivingApplicationView = prefix + "/" + "GetLocalDrivingApplicationView";
+            public const string GetLocalDrivingApplicationView = prefix + "/" + "GetLocalDrivingApplicationsView";
 
             public const string GetLicenseClases = prefix + "/" + "GetLicenseClasses";
 
             public const string AddNewLocalDrivingApplication = prefix + "/" + "AddNewLocalDrivingLicenseApplication";
 
-            public const string GetLicenseView = prefix + "/" + "GetLicenseView";
-
             public const string RenewLocalDrivingLicense = prefix + "/" + "RenewLocalDrivingLicense";
 
             public const string DetainLocalDrivingLicense = prefix + "/" + "DetainLocalDrivingLicense";
 
+            public const string CancelLocalDivingApplication = prefix + "/" + "CancelLocalDivingApplication";
+
+            public const string AddNewLocalLicenses = prefix + "/" + "AddNewLocalLicenses";
+
+            public const string GetLicenseView = prefix + "/" + "GetLicenseView";
 
         }
 
@@ -84,25 +87,42 @@ namespace DVLD.API.AppMetaData
         }
 
 
+        public static class AuthRouting
+        {
+
+            private const string prefix = Rule + "Auth";
+
+            public const string login = prefix + "/" + "login";
+
+        }
+
+
         public static class TestRouting
         {
 
             private const string prefix = Rule + "Test";
             public const string GetTestLocalDrivingLicenseDetail = prefix + "/" + "GetTestLocalDrivingLicenseDetail/{localDrivingApplication}";
-            public const string GetTestAppoimentView = prefix + "/" + "GetTestAppointmentView";
+            public const string GetTestAppoiments = prefix + "/" + "GetTestAppointments";
             public const string GetScheduleTestInfoView = prefix + "/" + "GetScheduleTestInfoView";
             public const string AddTestAppointment = prefix + "/" + "AddTestAppointment";
             public const string AddTestResult = prefix + "/" + "AddTestResult";
+
 
         }
 
         public static class SharedRouting
         {
-            public const string GetAllApplicationTypes = Rule + "GetAllApplicationTypes";
+            private const string prefix = Rule + "Shared/";
 
-            public const string UpdateApplicationType = Rule + "UpdateApplicationType";
+            public const string GetAllApplicationTypes = prefix + "GetAllApplicationTypes";
 
-            public const string GetAllCountries = Rule + "GetAllCountries";
+            public const string UpdateApplicationType = prefix + "UpdateApplicationType";
+
+            public const string GetAllCountries = prefix + "GetAllCountries";
+
+            public const string GetLicenseClases = prefix + "GetLicenseClasses";
+
+
         }
 
 

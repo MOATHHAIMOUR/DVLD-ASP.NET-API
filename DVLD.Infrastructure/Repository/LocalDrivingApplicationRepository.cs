@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DVLD.Domain.Entites;
 using DVLD.Domain.IRepository;
+using DVLD.Domain.StoredProcdure;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -13,6 +14,105 @@ namespace DVLD.Infrastructure.Repository
         public LocalDrivingApplicationRepository(IMapper mapper)
         {
             _mapper = mapper;
+        }
+
+        public async Task<bool> IsApplicantHasAcActiveApplicationPerApplicationType(int personId, int applicationTypeId)
+        {
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                var command = new SqlCommand("SP_IsApplicantHasAcActiveApplicationPerApplicationType", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                // Add input parameters
+                command.Parameters.AddWithValue("@applicantPersonId", personId);
+                command.Parameters.AddWithValue("@applicationTypeId", applicationTypeId);
+
+                // Add the return value parameter
+                var returnValue = new SqlParameter
+                {
+                    Direction = ParameterDirection.ReturnValue
+                };
+                command.Parameters.Add(returnValue);
+
+                // Open the connection
+                await connection.OpenAsync();
+
+                // Execute the command
+                await command.ExecuteNonQueryAsync();
+
+                // Retrieve the return value
+                var result = (int)returnValue.Value;
+
+                // Convert the result to a boolean and return it
+                return result == 1;
+            }
+        }
+
+        public async Task<bool> IsApplicanHasAlreadyActiveLicenseWithSameType(int personId, int licenseClassId)
+        {
+            const string storedProcedureName = "SP_IsApplicanHasAlreadyLicenseWithSameType";
+
+            using (var connection = new SqlConnection(DbSettings._connectionString)) // Replace _yourConnectionString with your actual connection string
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand(storedProcedureName, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add input parameters
+                    command.Parameters.AddWithValue("@applicantPersonId", personId);
+                    command.Parameters.AddWithValue("@LicenseclassId", licenseClassId);
+
+                    // Add the return value parameter
+                    var returnValue = new SqlParameter
+                    {
+                        Direction = ParameterDirection.ReturnValue
+                    };
+                    command.Parameters.Add(returnValue);
+
+                    // Execute the stored procedure
+                    await command.ExecuteNonQueryAsync();
+
+                    // Get the return value
+                    var result = (int)returnValue.Value;
+
+                    // Convert the result to a boolean and return it
+                    return result == 1;
+                }
+            }
+        }
+
+        public async Task<bool> IsLocalDrivingApplicationCompeletedOrCancelled(int localDrivingApplicationId)
+        {
+
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            using (var command = new SqlCommand(LocalDrivingApplicationStoredProcedures.SP_IsLocalDrivingApplicationCompeletedOrCancelled, connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add(new SqlParameter("@LocalDrivingApplicationId", SqlDbType.Int)
+                {
+                    Value = localDrivingApplicationId
+                });
+
+                var returnParameter = new SqlParameter
+                {
+                    ParameterName = "@ReturnVal",
+                    SqlDbType = SqlDbType.Int,
+                    Direction = ParameterDirection.ReturnValue
+                };
+
+                command.Parameters.Add(returnParameter);
+
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+
+                int result = (int)returnParameter.Value;
+
+                return result == 0; // true if completed or cancelled, false otherwise
+            }
         }
 
         public async Task<(int ApplicationId, int RenewLicenseId)> RenewLocalDrivingLicenseAsync(int licenseId, int createdByUserId, DateTime expirationDate)
@@ -214,9 +314,29 @@ namespace DVLD.Infrastructure.Repository
             throw new NotImplementedException();
         }
 
-        public Task<int> AddAsync(string storedProcedure, LocalDrivingLicenseApplication entity)
+        public async Task<int> AddAsync(string storedProcedure, LocalDrivingLicenseApplication entity)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add parameters
+                    command.Parameters.AddWithValue("@ApplicantPersonId", entity.Application.ApplicantPersonId);
+                    command.Parameters.AddWithValue("@ApplicationTypeId", entity.Application.ApplicationTypeId);
+                    command.Parameters.AddWithValue("@CreatedByUserId", entity.Application.CreatedByUserId);
+                    command.Parameters.AddWithValue("@LicenseClassId", entity.LicenseClassId);
+
+                    // Open connection
+                    await connection.OpenAsync();
+
+                    // Execute the command
+                    object result = await command.ExecuteScalarAsync();
+
+                    return result != null ? Convert.ToInt32(result) : 0;
+                }
+            }
         }
 
         public Task<bool> UpdateAsync(string storedProcedure, LocalDrivingLicenseApplication entity)
@@ -232,6 +352,61 @@ namespace DVLD.Infrastructure.Repository
         public Task<bool> IsExist(string storedProcedure, string propertyName, string value)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> IsLocalDrivingApplicationCompletedAsync(int localDrivingApplication)
+        {
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand("SP_IsLocalDrivingApplicationCompleted", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Input parameter
+                    command.Parameters.AddWithValue("@localDrivingApplication", localDrivingApplication);
+
+                    // Output parameter to capture the return value
+                    var returnValue = new SqlParameter
+                    {
+                        ParameterName = "@ReturnValue",
+                        SqlDbType = SqlDbType.Int,
+                        Direction = ParameterDirection.ReturnValue
+                    };
+                    command.Parameters.Add(returnValue);
+
+                    // Execute the procedure
+                    await command.ExecuteNonQueryAsync();
+
+                    // Return true if the stored procedure returned 1
+                    return (int)returnValue.Value == 1;
+                }
+            }
+        }
+
+        public async Task<bool> CancelLocalDrivingApplication(int localDrivingApplication)
+        {
+            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
+            {
+                using (SqlCommand command = new SqlCommand("SP_CancelLocalDrivingApplication", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add parameters
+                    command.Parameters.Add(new SqlParameter("@localDrivingApplication", SqlDbType.Int)
+                    {
+                        Value = localDrivingApplication
+                    });
+
+                    await connection.OpenAsync();
+
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                    // Assuming the procedure always updates one row if successful
+                    return rowsAffected > 0;
+                }
+            }
         }
     }
 }

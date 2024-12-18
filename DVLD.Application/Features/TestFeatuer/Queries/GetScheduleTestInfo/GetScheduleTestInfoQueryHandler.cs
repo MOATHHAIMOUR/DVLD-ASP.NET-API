@@ -6,7 +6,7 @@ using MediatR;
 
 namespace DVLD.Application.Features.TestFeatuer.Queries.GetScheduleTestInfo
 {
-    public class GetScheduleTestInfoQueryHandler : IRequestHandler<GetScheduleTestInfoQuery, ApiResponse<ScheduleTestView>>
+    public class GetScheduleTestInfoQueryHandler : IRequestHandler<GetScheduleTestInfoQuery, ApiResponse<ScheduleAndTake_TestView>>
     {
         private readonly ITestServices _testServices;
 
@@ -15,11 +15,11 @@ namespace DVLD.Application.Features.TestFeatuer.Queries.GetScheduleTestInfo
             _testServices = testServices;
         }
 
-        public async Task<ApiResponse<ScheduleTestView>> Handle(GetScheduleTestInfoQuery request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<ScheduleAndTake_TestView>> Handle(GetScheduleTestInfoQuery request, CancellationToken cancellationToken)
         {
             var result = await _testServices.GetScheduleTestInfoAsync(request.LocalDrivingLicenseApplication, request.TestTypeId);
             if (result == null)
-                return ApiResponseHandler.NotFound<ScheduleTestView>([result.Error.Message]);
+                return ApiResponseHandler.NotFound<ScheduleAndTake_TestView>([result.Error.Message]);
 
             return ApiResponseHandler.Success(result.Value!);
         }

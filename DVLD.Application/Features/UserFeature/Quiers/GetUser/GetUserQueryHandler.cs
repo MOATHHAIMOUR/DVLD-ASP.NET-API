@@ -1,4 +1,3 @@
-
 using AutoMapper;
 using DVLD.Application.Common.ApiResponse;
 using DVLD.Application.DTO.Users;
@@ -23,7 +22,8 @@ namespace DVLD.Application.Features.UserFeature.Quiers.GetUser
             var result = await _userServices.GetUserByIdOrUserNameAsync(request.UserId, request.UserName);
 
             return result.IsSuccess ?
-                ApiResponseHandler.Success(_mapper.Map<GetUserDTO>(result.Value)) :
+                ApiResponseHandler.Success(_mapper.Map<GetUserDTO>(result.Value))
+                :
                 ApiResponseHandler.NotFound<GetUserDTO>([result.Error.Message]);
         }
     }

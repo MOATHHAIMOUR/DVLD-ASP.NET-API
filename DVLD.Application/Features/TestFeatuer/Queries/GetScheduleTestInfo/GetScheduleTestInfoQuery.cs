@@ -4,7 +4,7 @@ using MediatR;
 
 namespace DVLD.Application.Features.TestFeatuer.Queries.GetScheduleTestInfoAsync
 {
-    public class GetScheduleTestInfoQuery : IRequest<ApiResponse<ScheduleTestView>>
+    public class GetScheduleTestInfoQuery : IRequest<ApiResponse<ScheduleAndTake_TestView>>
     {
         public GetScheduleTestInfoQuery(int localDrivingLicenseApplication, int testTypeId)
         {

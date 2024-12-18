@@ -9,16 +9,12 @@ namespace DVLD.Application.DTO.LocalDrivingApplicationDtos.profiler
         {
 
             // Map LocalDrivingLicenseApplicationDto to LocalDrivingLicenseApplication
-            CreateMap<AddNewLocalDrivingLicenseDTO, LocalDrivingLicenseApplication>()
+            CreateMap<AddNewLocalDrivingLicenseApplicationDTO, LocalDrivingLicenseApplication>()
                 .ForMember(dest => dest.Application,
                 opt => opt.MapFrom(src => new Domain.Entites.Application
                 {
                     ApplicantPersonId = src.ApplicantPersonId,
-                    ApplicationDate = src.ApplicationDate,
                     ApplicationTypeId = src.ApplicationTypeId,
-                    ApplicationStatus = src.ApplicationStatus,
-                    LastStatusDate = src.LastStatusDate,
-                    PaidFees = src.PaidFees,
                     CreatedByUserId = src.CreatedByUserId
                 }))
                 .ForMember(dest => dest.LicenseClass,

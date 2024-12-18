@@ -84,9 +84,41 @@ namespace DVLD.Infrastructure.Repository
             throw new NotImplementedException();
         }
 
-        public Task<int> AddAsync(string storedProcedure, TestAppointment entity)
+        public async Task<int> AddAsync(string storedProcedure, TestAppointment entity)
         {
-            throw new NotImplementedException();
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add parameters
+                    command.Parameters.AddWithValue("@LocalDrivingLicenseApplicationId", entity.LocalDrivingLicenseApplicationId);
+                    command.Parameters.AddWithValue("@TestTypeId", entity.TestTypeId);
+                    command.Parameters.AddWithValue("@CreatedByUserID", entity.CreatedByUserId);
+
+                    // Output parameter to get the newly created TestAppointmentId
+                    var outputParam = new SqlParameter("@RetakeTestApplicationId", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(outputParam);
+
+                    var outputParam2 = new SqlParameter("@TestApplicationId", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(outputParam2);
+
+                    // Execute the stored procedure
+                    await command.ExecuteNonQueryAsync();
+
+                    // Retrieve the TestAppointmentId from the output parameter
+                    return (int)outputParam2.Value;
+                }
+            }
         }
 
         public Task<bool> UpdateAsync(string storedProcedure, TestAppointment entity)

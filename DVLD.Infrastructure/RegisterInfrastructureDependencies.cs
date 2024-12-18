@@ -26,6 +26,7 @@ namespace DVLD.Infrastructure
             services.AddScoped<IInternationalLicenseRepository, InternationalLicenseRepository>();
             services.AddScoped<IDetainedLicenseRepository, DetainedLicenseRepository>();
             services.AddScoped<ILicenseRepository, LicenseRepository>();
+            services.AddScoped<IJWTAuthenticationWithRefreshTokenRepository, JWTAuthenticationWithRefreshTokenRepository>();
 
             return services;
         }

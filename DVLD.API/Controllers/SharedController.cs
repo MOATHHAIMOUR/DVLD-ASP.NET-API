@@ -5,6 +5,7 @@ using DVLD.Application.DTO.SharedDTOs;
 using DVLD.Application.Features.SettingsFeatuer.Command.UpdateApplicationType;
 using DVLD.Application.Features.SettingsFeatuer.Queries.GetAllApplicationTypes;
 using DVLD.Application.Features.SettingsFeatuer.Queries.GetAllCountries;
+using DVLD.Application.Features.SettingsFeatuer.Queries.GetLicenseClasses;
 using DVLD.Domain.Entites;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,15 @@ namespace DVLD.API.Controllers
 
         public SharedController(IMediator mediator) : base(mediator)
         {
+        }
+
+
+        [HttpGet(Router.SharedRouting.GetLicenseClases)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<ApiResponse<LicenseClass>>> GetLicenseClases()
+        {
+            var response = await _mediator.Send(new GetLicenseClassesQuery());
+            return NewResult(response);
         }
 
 

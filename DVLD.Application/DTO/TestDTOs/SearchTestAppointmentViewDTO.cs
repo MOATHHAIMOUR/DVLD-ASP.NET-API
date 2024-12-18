@@ -7,7 +7,7 @@ namespace DVLD.Application.DTO.TestDTOs
         public int? LocalDrivingLicenseApplicationId { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public EnumLocalDrivingTestType? TestTypeId { get; set; }
+        public EnumTestType? TestTypeId { get; set; }
         public DateTime? AppointmentDate { get; set; }
         public string? TestResult { get; set; }
         public bool? IsLocked { get; set; }
