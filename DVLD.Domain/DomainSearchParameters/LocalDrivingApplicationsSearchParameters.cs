@@ -1,4 +1,6 @@
-﻿namespace DVLD.Domain.DomainSearchParameters
+﻿using DVLD.Domain.Enums;
+
+namespace DVLD.Domain.DomainSearchParameters
 {
     public class LocalDrivingApplicationsSearchParameters
     {
@@ -8,7 +10,7 @@
         public string? FullName { get; set; }
         public DateTime? ApplicationDate { get; set; }
         public int? PassedTests { get; set; }
-        public string? ApplicationStatus { get; set; }
+        public EnumApplicationStatus? ApplicationStatus { get; set; }
         public string? OrderBy { get; set; }
         public string? OrderDirection { get; set; } = "ASC";
         public int PageSize { get; set; } = 10;

@@ -23,7 +23,7 @@ namespace DVLD.Application.Features.ApplicationsFeatuers.LocalDrivingApplication
             var license = _mapper.Map<License>(request.AddNewDetainLicenseDTO);
 
             // Call the service to add the license and await the result
-            var result = await _localDrivingLicenseApplicationServices.AddLicensesAsync(license);
+            var result = await _localDrivingLicenseApplicationServices.AddLicensesForFirstTimeAsync(license);
 
             if (!result.IsSuccess)
                 return ApiResponseHandler.BadRequest<string>([result.Error.Message]);

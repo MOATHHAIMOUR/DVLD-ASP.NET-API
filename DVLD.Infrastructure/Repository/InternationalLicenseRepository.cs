@@ -16,48 +16,6 @@ namespace DVLD.Infrastructure.Repository
             _mapper = mapper;
         }
 
-        public async Task<(bool IsValid, int LicenseId)> CheckDriverHasOrdinaryLocalDrivingLicenseAsync(int driverId)
-        {
-            // Output variables
-            int licenseId = 0;
-            bool isValid = false;
-
-            using (var connection = new SqlConnection(DbSettings._connectionString))
-            {
-                using (var command = new SqlCommand("SP_IsDriverHasOrdinaryLocalDrivingLicense", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    // Input parameter
-                    command.Parameters.AddWithValue("@DriverId", driverId);
-
-                    // Output parameters
-                    var licenseIdParam = new SqlParameter("@LicenseId", SqlDbType.Int)
-                    {
-                        Direction = ParameterDirection.Output
-                    };
-                    var isValidParam = new SqlParameter("@IsValid", SqlDbType.Bit)
-                    {
-                        Direction = ParameterDirection.Output
-                    };
-
-                    command.Parameters.Add(licenseIdParam);
-                    command.Parameters.Add(isValidParam);
-
-                    // Open connection
-                    await connection.OpenAsync();
-
-                    // Execute stored procedure
-                    await command.ExecuteNonQueryAsync();
-
-                    // Retrieve output parameter values
-                    licenseId = (int)licenseIdParam.Value;
-                    isValid = (bool)isValidParam.Value;
-                }
-            }
-
-            return (isValid, licenseId);
-        }
 
         public async Task<bool> HasInternationalLicenseAsync(int driverId)
         {

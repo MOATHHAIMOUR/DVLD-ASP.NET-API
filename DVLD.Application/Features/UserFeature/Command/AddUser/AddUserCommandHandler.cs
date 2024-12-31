@@ -28,7 +28,7 @@ namespace DVLD.Application.Features.UserFeature.Command.AddUser
             return result.IsSuccess ?
                  ApiResponseHandler.Success($"User with Id: {result.Value} has been successfully added to the system")
                  :
-                 ApiResponseHandler.NotFound<string>([result.Error.Message]);
+                 ApiResponseHandler.BadRequest<string>([result.Error.Message]);
         }
     }
 }

@@ -17,18 +17,19 @@ namespace DVLD.Application.Services
     {
         private readonly IJWTAuthenticationWithRefreshTokenRepository _jWTAuthenticationWithRefreshTokenRepository;
         private readonly JwtSettings _jwtSettings;
-
-        public JWTAuthenticationWithRefreshTokenServices(IOptions<JwtSettings> jwtSettings, IJWTAuthenticationWithRefreshTokenRepository jWTAuthenticationWithRefreshTokenRepository)
+        private readonly IUserRepository _userRepository;
+        public JWTAuthenticationWithRefreshTokenServices(IOptions<JwtSettings> jwtSettings, IJWTAuthenticationWithRefreshTokenRepository jWTAuthenticationWithRefreshTokenRepository, IUserRepository userRepository)
         {
             _jwtSettings = jwtSettings.Value;
             _jWTAuthenticationWithRefreshTokenRepository = jWTAuthenticationWithRefreshTokenRepository;
+            _userRepository = userRepository;
         }
 
 
-        public async Task<Result<AuthenticationResponse>> AuthenticateUser(string userId, string password)
+        public async Task<Result<AuthenticationResponse>> AuthenticateUser(string Username, string password)
         {
             // Call the repository to authenticate the user
-            (bool IsAuthenticated, bool IsActive) = await _jWTAuthenticationWithRefreshTokenRepository.AuthenticateUserAsync(userId, password);
+            (bool IsAuthenticated, bool IsActive) = await _jWTAuthenticationWithRefreshTokenRepository.AuthenticateUserAsync(Username, password);
 
             // Case 1: User is not authenticated (Invalid credentials)
             if (!IsAuthenticated)
@@ -48,11 +49,13 @@ namespace DVLD.Application.Services
             if (IsAuthenticated && IsActive)
             {
                 // Generate JWT Token
-                string JwtToken = generateJWTToken(userId);
+                string JwtToken = generateJWTToken(Username);
 
                 // Generate Refresh Token
+                DateTime ExpirationDate = DateTime.Now.AddDays(7).Date;
 
-                (bool isSaved, string refreshToken) = await GenerateRefreshToken("", userId);
+
+                (bool isSaved, string refreshToken) = await GenerateRefreshToken(Username, ExpirationDate);
 
                 if (!isSaved)
                     return Result<AuthenticationResponse>.Failure(
@@ -60,12 +63,13 @@ namespace DVLD.Application.Services
 
                 return Result<AuthenticationResponse>.Success(new AuthenticationResponse
                 {
-                    UserId = userId,
+                    UserId = Username,
                     IsValid = true,
                     RefreshToken = refreshToken,
                     AuthenticationMessage = "Authentication Completed Successfully",
                     JWTToken = JwtToken,
-                    ExpiersAt = DateTime.Now.AddMinutes(_jwtSettings.ExpirationMinutes)
+                    tokenExpirersAt = DateTime.Now.AddMinutes(_jwtSettings.ExpirationMinutes),
+                    refreshTokenExpiration = ExpirationDate
 
                 });
             }
@@ -75,16 +79,53 @@ namespace DVLD.Application.Services
                 Error.ValidationError("An unexpected error occurred during authentication."));
         }
 
-
-
-        private async Task<(bool isSaved, string refreshToken)> GenerateRefreshToken(string ipAddr, string userId)
+        public async Task<Result<AuthenticationResponse>> RefreshTokenAsync(string token)
         {
-            string refreshToken = GetRefreshToken();
-            DateTime ExpirationDate = DateTime.Now.AddDays(7).Date;
-            bool result = await _jWTAuthenticationWithRefreshTokenRepository.SaveRefreshTokenAsync(userId, refreshToken, ExpirationDate, ipAddr);
+            // Check if the refresh token is valid and retrieve the userId
+            (int userId, DateTime? ExpierTime) = await _jWTAuthenticationWithRefreshTokenRepository.GetRefreshTokenDetailsAsync(token);
 
-            return (result, refreshToken);
+            if (userId == 0 || ExpierTime == null)
+                return Result<AuthenticationResponse>.Failure(Error.ValidationError("The refresh token is not valid."));
+
+            if (DateTime.Now > ExpierTime)
+            {
+                await _jWTAuthenticationWithRefreshTokenRepository.RevokeRefreshToken(token);
+                return Result<AuthenticationResponse>.Failure(Error.ValidationError("The refresh token is not valid."));
+            }
+
+            // After confirming the refresh token is valid and not expier we can genrate new JWT 
+
+            // 1. Revoke the old refresh token
+            await _jWTAuthenticationWithRefreshTokenRepository.RevokeRefreshToken(token);
+
+            // 2. Generate a new refresh token
+
+            // get user data 
+            var user = await _userRepository.GetUserByIdOrUserName(userId, null);
+
+            DateTime refreshTokenExpirationDate = DateTime.Now.AddDays(7);
+
+            (bool isSaved, string refreshToken) = await GenerateRefreshToken(user!.UserName, refreshTokenExpirationDate);
+
+            if (!isSaved)
+                return Result<AuthenticationResponse>.Failure(Error.ValidationError("Failed to generate a new refresh token."));
+
+            // 3. Generate a new JWT token
+            string newJwtToken = generateJWTToken(userId.ToString());
+
+            return Result<AuthenticationResponse>.Success(new AuthenticationResponse
+            {
+                UserId = userId.ToString(),
+                IsValid = true,
+                RefreshToken = refreshToken,
+                AuthenticationMessage = "Authentication completed successfully.",
+                JWTToken = newJwtToken,
+                tokenExpirersAt = DateTime.Now.AddMinutes(_jwtSettings.ExpirationMinutes),
+                refreshTokenExpiration = refreshTokenExpirationDate
+            });
         }
+
+
 
         private string generateJWTToken(string userId)
         {
@@ -125,8 +166,13 @@ namespace DVLD.Application.Services
                 return new JwtSecurityTokenHandler().WriteToken(token);
              */
         }
+        private async Task<(bool isSaved, string refreshToken)> GenerateRefreshToken(string username, DateTime ExpirationDate)
+        {
+            string refreshToken = GetRefreshToken();
+            bool result = await _jWTAuthenticationWithRefreshTokenRepository.SaveRefreshTokenAsync(username, refreshToken, ExpirationDate, "");
 
-
+            return (result, refreshToken);
+        }
         private string GetRefreshToken()
         {
             byte[] randomBytes = new byte[32]; // Define the size of the random byte array

@@ -26,8 +26,8 @@ namespace DVLD.Infrastructure.Repository
                 };
 
                 // Add input parameters
-                command.Parameters.AddWithValue("@applicantPersonId", personId);
-                command.Parameters.AddWithValue("@applicationTypeId", applicationTypeId);
+                command.Parameters.AddWithValue("@ApplicantPersonId", personId);
+                command.Parameters.AddWithValue("@ApplicationTypeId", applicationTypeId);
 
                 // Add the return value parameter
                 var returnValue = new SqlParameter
@@ -47,6 +47,74 @@ namespace DVLD.Infrastructure.Repository
 
                 // Convert the result to a boolean and return it
                 return result == 1;
+            }
+        }
+
+
+
+        public async Task<bool> IsApplicantHasAcActiveLocalDrivingApplication(int personId, int LicenseClassId)
+        {
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                var command = new SqlCommand("SP_IsApplicantHasAcActiveLocalDrivingApplication", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                // Add input parameters
+                command.Parameters.AddWithValue("@ApplicantPersonId", personId);
+                command.Parameters.AddWithValue("@LicenseClassId", LicenseClassId);
+
+                // Add the return value parameter
+                var returnValue = new SqlParameter
+                {
+                    Direction = ParameterDirection.ReturnValue
+                };
+                command.Parameters.Add(returnValue);
+
+                // Open the connection
+                await connection.OpenAsync();
+
+                // Execute the command
+                await command.ExecuteNonQueryAsync();
+
+                // Retrieve the return value
+                var result = (int)returnValue.Value;
+
+                // Convert the result to a boolean and return it
+                return result == 1;
+            }
+        }
+
+
+        public async Task<bool> IsApplicantHasLocalLicenseAsync(int licenseClassId, int applicationId)
+        {
+            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
+            {
+                using (SqlCommand command = new SqlCommand("SP_IsApplicantHasLocalLicense", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add parameters
+                    command.Parameters.Add(new SqlParameter("@LicenseClassId", SqlDbType.Int) { Value = licenseClassId });
+                    command.Parameters.Add(new SqlParameter("@ApplicationId", SqlDbType.Int) { Value = applicationId });
+
+                    // Add a return parameter
+                    SqlParameter returnValue = new SqlParameter
+                    {
+                        Direction = ParameterDirection.ReturnValue
+                    };
+                    command.Parameters.Add(returnValue);
+
+                    await connection.OpenAsync();
+
+                    // Execute the stored procedure
+                    await command.ExecuteNonQueryAsync();
+
+                    // Retrieve the return value
+                    int result = (int)returnValue.Value;
+                    return result == 1;
+                }
             }
         }
 
@@ -115,7 +183,7 @@ namespace DVLD.Infrastructure.Repository
             }
         }
 
-        public async Task<(int ApplicationId, int RenewLicenseId)> RenewLocalDrivingLicenseAsync(int licenseId, int createdByUserId, DateTime expirationDate)
+        public async Task<(int ApplicationId, int RenewLicenseId)> RenewLocalDrivingLicenseAsync(int licenseId, int createdByUserId)
         {
             using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
             {
@@ -126,7 +194,6 @@ namespace DVLD.Infrastructure.Repository
                     // Add input parameters
                     command.Parameters.AddWithValue("@LicenseId", licenseId);
                     command.Parameters.AddWithValue("@CreatedByUserId", createdByUserId);
-                    command.Parameters.AddWithValue("@ExpirationDate", expirationDate);
 
                     // Add output parameters
                     SqlParameter applicationIdParam = new SqlParameter("@ApplicationId", SqlDbType.Int)
@@ -324,7 +391,6 @@ namespace DVLD.Infrastructure.Repository
 
                     // Add parameters
                     command.Parameters.AddWithValue("@ApplicantPersonId", entity.Application.ApplicantPersonId);
-                    command.Parameters.AddWithValue("@ApplicationTypeId", entity.Application.ApplicationTypeId);
                     command.Parameters.AddWithValue("@CreatedByUserId", entity.Application.CreatedByUserId);
                     command.Parameters.AddWithValue("@LicenseClassId", entity.LicenseClassId);
 

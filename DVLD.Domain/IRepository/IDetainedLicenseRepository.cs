@@ -11,5 +11,9 @@ namespace DVLD.Domain.IRepository
         int releasedByUserId);
 
 
+        public Task<bool> IsLicenseDetain(int licenseId);
+
+
+
     }
 }

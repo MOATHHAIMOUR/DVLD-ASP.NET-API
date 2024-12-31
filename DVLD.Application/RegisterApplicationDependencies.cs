@@ -31,7 +31,7 @@ namespace DVLD.Application
             services.AddScoped<IInternationalLicenseServices, InternationalLicenseServices>();
             services.AddScoped<IDetainLicenseServices, DetainLicenseServices>();
             services.AddScoped<IImageServices, ImageServices>();
-            services.AddScoped<ILicnsesServices, LicnsesServices>();
+            services.AddScoped<IReplaceDamageLostLicenseServices, ReplaceDamageLostLicenseServices>();
             services.AddScoped<IJWTAuthenticationWithRefreshTokenServices, JWTAuthenticationWithRefreshTokenServices>();
 
             return services;

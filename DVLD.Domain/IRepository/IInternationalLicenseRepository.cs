@@ -10,6 +10,5 @@ namespace DVLD.Domain.IRepository
         public Task<(int applicationId, int internationalLicenseId)> AddInternationalLicenseAsync(string storedProcedure, InternationalLicense entity);
 
 
-        public Task<(bool IsValid, int LicenseId)> CheckDriverHasOrdinaryLocalDrivingLicenseAsync(int driverId);
     }
 }

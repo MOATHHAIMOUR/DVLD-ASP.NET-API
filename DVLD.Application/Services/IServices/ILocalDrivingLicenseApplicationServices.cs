@@ -16,13 +16,13 @@ namespace DVLD.Application.Services.IServices
         public Task<Result<string>> CancelLocalDrivingApplication(int localDrivingApplicationId);
         public Task<Result<IEnumerable<LicenseClass>>> GetLicenseClassesAsync();
 
-        public Task<Result<string>> AddLicensesAsync(License license);
+        public Task<Result<string>> AddLicensesForFirstTimeAsync(License license);
 
         public Task<Result<LicenseDetailsView>> GetLicenseViewAsync(int? ApplicationId, int? LicenseId, int? localDrivingApplicationId);
 
         public Task<bool> IsLocalDrivingLicenseExistsAsync(int licenseId);
 
-        public Task<Result<RenewLocalLicenseResultDTO>> RenewLocalDrivingLicenseAsync(int licenseId, int createdByUserId, DateTime expirationDate);
+        public Task<Result<RenewLocalLicenseResultDTO>> RenewLocalDrivingLicenseAsync(int licenseId, int createdByUserId);
 
 
     }

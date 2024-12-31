@@ -3,7 +3,7 @@ using DVLD.Application.Services.IServices;
 using DVLD.Domain.Entites.Auth;
 using MediatR;
 
-namespace DVLD.Application.Features.AuthFeature.Commands
+namespace DVLD.Application.Features.AuthFeature.Commands.Authentication
 {
     public class AuthenticationCommandHandler : IRequestHandler<AuthenticationCommand, ApiResponse<AuthenticationResponse>>
     {
@@ -17,7 +17,7 @@ namespace DVLD.Application.Features.AuthFeature.Commands
         public async Task<ApiResponse<AuthenticationResponse>> Handle(AuthenticationCommand request, CancellationToken cancellationToken)
         {
 
-            var result = await _jWTAuthenticationWithRefreshTokenServices.AuthenticateUser(request.AuthenticationRequest.UserId, request.AuthenticationRequest.Password);
+            var result = await _jWTAuthenticationWithRefreshTokenServices.AuthenticateUser(request.AuthenticationRequest.Username, request.AuthenticationRequest.Password);
 
             if (!result.IsSuccess)
                 return ApiResponseHandler.Unauthorized<AuthenticationResponse>(result.Error.Message);

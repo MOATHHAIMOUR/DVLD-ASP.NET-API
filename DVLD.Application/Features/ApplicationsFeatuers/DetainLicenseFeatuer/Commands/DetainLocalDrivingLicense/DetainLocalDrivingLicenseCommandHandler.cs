@@ -21,15 +21,15 @@ namespace DVLD.Application.Features.ApplicationsFeatuers.DetainLicenseFeatuer.Co
         {
             DetainedLicense detainedLicense = _mapper.Map<DetainedLicense>(request.DetainLicenseDTO);
 
-            var renewLocalLicenseResultDTO = await _detainLicenseServices.DetainLocalDrivingLicenseAsync(detainedLicense);
+            var detainLocalLicenseResultDTO = await _detainLicenseServices.DetainLocalDrivingLicenseAsync(detainedLicense);
 
-            if (!renewLocalLicenseResultDTO.IsSuccess)
-                return ApiResponseHandler.BadRequest<object>([renewLocalLicenseResultDTO.Error.Message]);
+            if (!detainLocalLicenseResultDTO.IsSuccess)
+                return ApiResponseHandler.BadRequest<object>([detainLocalLicenseResultDTO.Error.Message]);
 
 
             return ApiResponseHandler.Success<object>(new
             {
-                detainLicenseId = renewLocalLicenseResultDTO.Value
+                detainLicenseId = detainLocalLicenseResultDTO.Value
             });
         }
     }

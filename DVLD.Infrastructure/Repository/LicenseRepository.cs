@@ -15,6 +15,8 @@ namespace DVLD.Infrastructure.Repository
             _mapper = mapper;
         }
 
+
+
         public async Task<int> AddAsync(string storedProcedure, License entity)
         {
             int newLicenseId = 0;
@@ -62,14 +64,113 @@ namespace DVLD.Infrastructure.Repository
             throw new NotImplementedException();
         }
 
-        public Task<License?> GetAsync(string storedProcedure, string propertyName, int value)
+        public async Task<License?> GetAsync(string storedProcedure, string propertyName, int value)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (SqlCommand command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue(propertyName, value);
+
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return _mapper.Map<License>(reader);
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
         public Task<bool> IsExist(string storedProcedure, string propertyName, string value)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<(int ApplicationId, int ReplacementLostLocalDrivingLicense)> ReplaceLostLicenseAsync(string storedProcedure, int LicenseId, int userId)
+        {
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add input parameters
+                    command.Parameters.Add(new SqlParameter("@LicenseId", SqlDbType.Int) { Value = LicenseId });
+                    command.Parameters.Add(new SqlParameter("@CreatedByUserId", SqlDbType.Int) { Value = userId });
+
+                    // Add output parameters
+                    var applicationIdParam = new SqlParameter("@ApplicationId", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(applicationIdParam);
+
+                    var replacementLicenseIdParam = new SqlParameter("@ReplacementForLostLicenseId", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(replacementLicenseIdParam);
+
+                    // Execute the stored procedure
+                    await command.ExecuteNonQueryAsync();
+
+                    // Retrieve output parameter values
+                    var ApplicationId = (int)applicationIdParam.Value;
+                    var ReplacementLostLocalDrivingLicense = (int)replacementLicenseIdParam.Value;
+
+                    // Return success if both output values are valid
+                    return (ApplicationId, ReplacementLostLocalDrivingLicense);
+                }
+            }
+        }
+
+
+        public async Task<(int ApplicationId, int ReplacementDamageForLicenseId)> ReplaceDamageLicenseAsync(string storedProcedure, int LicenseId, int userId)
+        {
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add input parameters
+                    command.Parameters.Add(new SqlParameter("@LicenseId", SqlDbType.Int) { Value = LicenseId });
+                    command.Parameters.Add(new SqlParameter("@CreatedByUserId", SqlDbType.Int) { Value = userId });
+
+                    // Add output parameters
+                    var applicationIdParam = new SqlParameter("@ApplicationId", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(applicationIdParam);
+
+                    var replacementDamageForLicenseIdParam = new SqlParameter("@ReplacementDamageForLicenseId", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(replacementDamageForLicenseIdParam);
+
+                    // Execute the stored procedure
+                    await command.ExecuteNonQueryAsync();
+
+                    // Retrieve output parameter values
+                    var ApplicationId = (int)applicationIdParam.Value;
+                    var ReplacementDamageForLicenseId = (int)replacementDamageForLicenseIdParam.Value;
+
+                    // Return success if both output values are valid
+                    return (ApplicationId, ReplacementDamageForLicenseId);
+                }
+            }
         }
 
         public Task<bool> UpdateAsync(string storedProcedure, License entity)

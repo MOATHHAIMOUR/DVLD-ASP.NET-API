@@ -54,7 +54,8 @@ namespace DVLD.Infrastructure.RepositoryProfiler
             .ForMember(dest => dest.DriverId, opt => opt.MapFrom(src => src["DriverId"]))
             .ForMember(dest => dest.ExpirationDate, opt => opt.MapFrom(src => src["ExpirationDate"])).
              ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src["ImagePath"]))
-            .ForMember(dest => dest.IsDetain, opt => opt.MapFrom(src => src["IsDetain"]));
+            .ForMember(dest => dest.IsDetain, opt => opt.MapFrom(src => src["IsDetain"]))
+            .ForMember(dest => dest.FineFees, opt => opt.MapFrom(src => src["FineFees"]));
 
 
             CreateMap<IDataRecord, TestAppointmentView>()

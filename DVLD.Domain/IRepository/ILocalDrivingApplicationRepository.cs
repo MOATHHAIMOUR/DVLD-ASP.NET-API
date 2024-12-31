@@ -5,16 +5,21 @@ namespace DVLD.Domain.IRepository
 {
     public interface ILocalDrivingApplicationRepository : IGenericRepository<LocalDrivingLicenseApplication>
     {
-        public Task<(int ApplicationId, int RenewLicenseId)> RenewLocalDrivingLicenseAsync(int licenseId, int createdByUserId, DateTime expirationDate);
+        public Task<(int ApplicationId, int RenewLicenseId)> RenewLocalDrivingLicenseAsync(int licenseId, int createdByUserId);
 
         public Task<(int ApplicationId, int ReplacementForLostLicenseId)> ReplaceForLostLocalDrivingLicenseAsync(int licenseId,
         int createdByUserId,
         DateTime expirationDate);
 
+
+        public Task<bool> IsApplicantHasLocalLicenseAsync(int licenseClassId, int applicationId);
+
         public Task<(int ApplicationId, int ReplacementDamageForLicenseId)> ReplaceForDamageLocalDrivingLicenseAsync(
         int licenseId,
         int createdByUserId,
         DateTime expirationDate);
+
+        public Task<bool> IsApplicantHasAcActiveLocalDrivingApplication(int personId, int LicenseClassId);
 
         public Task<bool> CancelLocalDrivingApplication(int localDrivingApplication);
 

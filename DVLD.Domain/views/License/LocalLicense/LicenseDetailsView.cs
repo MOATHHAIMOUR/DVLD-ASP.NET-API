@@ -15,6 +15,9 @@ namespace DVLD.Domain.views.License.LocalLicense
         public required int IssueReason { get; set; }
         public string? Notes { get; set; } = string.Empty;
         public required bool IsActive { get; set; }
+
+        public decimal? FineFees { get; set; }
+
         public required DateTime DateOfBirth { get; set; }
         public required int DriverId { get; set; }
         public required DateTime ExpirationDate { get; set; }

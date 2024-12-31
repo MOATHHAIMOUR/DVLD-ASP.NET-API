@@ -2,7 +2,7 @@
 using DVLD.Domain.Entites.Auth;
 using MediatR;
 
-namespace DVLD.Application.Features.AuthFeature.Commands
+namespace DVLD.Application.Features.AuthFeature.Commands.Authentication
 {
     public class AuthenticationCommand : IRequest<ApiResponse<AuthenticationResponse>>
     {

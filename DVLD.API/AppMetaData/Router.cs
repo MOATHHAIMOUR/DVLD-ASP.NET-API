@@ -56,7 +56,7 @@ namespace DVLD.API.AppMetaData
 
             public const string CancelLocalDivingApplication = prefix + "/" + "CancelLocalDivingApplication";
 
-            public const string AddNewLocalLicenses = prefix + "/" + "AddNewLocalLicenses";
+            public const string AddNewLocalLicense = prefix + "/" + "AddNewLocalLicense";
 
             public const string GetLicenseView = prefix + "/" + "GetLicenseView";
 
@@ -80,9 +80,19 @@ namespace DVLD.API.AppMetaData
 
             private const string prefix = Rule + "DetainLicense";
 
-            public const string DetainLicense = prefix + "/" + "DetainLicense";
+            public const string DetainLicense = prefix + "/" + "AddDetainLicense";
 
             public const string ReleaseLicense = prefix + "/" + "ReleaseLicense";
+
+        }
+        public static class ReplaceLostDamageRouter
+        {
+
+            private const string prefix = Rule + "ReplaceLostDamageController";
+
+            public const string ReplaceLostLicense = prefix + "/" + "ReplaceLostLicense";
+
+            public const string ReplaceDamageLicense = prefix + "/" + "ReplaceDamageLicense";
 
         }
 
@@ -92,7 +102,8 @@ namespace DVLD.API.AppMetaData
 
             private const string prefix = Rule + "Auth";
 
-            public const string login = prefix + "/" + "login";
+            public const string login = prefix + "/" + "Login";
+            public const string RefreshToken = prefix + "/" + "RefreshToken";
 
         }
 

@@ -43,10 +43,7 @@ public class GetPeopleQueryValidator : AbstractValidator<GetAllPersonsQuery>
         // Email: Optional, max length 50, validate email format if present
         RuleFor(x => x.PeopleSearchParams.Email)
             .MaximumLength(30)
-            .WithMessage("Email must be at most 30 characters.")
-            .EmailAddress()
-            .When(x => !string.IsNullOrEmpty(x.PeopleSearchParams.Email))
-            .WithMessage("Email must be a valid email address.");
+            .WithMessage("Email must be at most 30 characters.");
 
         // CountryName: Optional, max length 50
         RuleFor(x => x.PeopleSearchParams.CountryName)

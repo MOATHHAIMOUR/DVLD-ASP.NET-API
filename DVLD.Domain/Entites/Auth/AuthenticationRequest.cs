@@ -2,8 +2,7 @@
 {
     public class AuthenticationRequest
     {
-        public string UserId { get; set; }
-        public string Password { get; set; }
-        public string Operation { get; set; }
+        public required string Username { get; set; }
+        public required string Password { get; set; }
     }
 }

@@ -6,7 +6,7 @@ namespace DVLD.Infrastructure.Repository
 {
     public class JWTAuthenticationWithRefreshTokenRepository : IJWTAuthenticationWithRefreshTokenRepository
     {
-        public async Task<(bool IsAuthenticated, bool IsActive)> AuthenticateUserAsync(string userId, string userPassword)
+        public async Task<(bool IsAuthenticated, bool IsActive)> AuthenticateUserAsync(string UserName, string userPassword)
         {
             using (var connection = new SqlConnection(DbSettings._connectionString))
             {
@@ -17,7 +17,7 @@ namespace DVLD.Infrastructure.Repository
                     command.CommandType = CommandType.StoredProcedure;
 
                     // Input Parameters
-                    command.Parameters.AddWithValue("@UserId", userId);
+                    command.Parameters.AddWithValue("@UserName", UserName);
                     command.Parameters.AddWithValue("@UserPassword", userPassword);
 
                     // Output Parameters
@@ -48,7 +48,7 @@ namespace DVLD.Infrastructure.Repository
             }
         }
 
-        public async Task<bool> SaveRefreshTokenAsync(string loginId, string refreshToken, DateTime expirationDate, string createdByIp)
+        public async Task<bool> SaveRefreshTokenAsync(string UserId, string refreshToken, DateTime expirationDate, string createdByIp)
         {
             using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
             {
@@ -57,7 +57,7 @@ namespace DVLD.Infrastructure.Repository
                     command.CommandType = CommandType.StoredProcedure;
 
                     // Add input parameters
-                    command.Parameters.AddWithValue("@LoginId", loginId);
+                    command.Parameters.AddWithValue("@UserName", UserId);
                     command.Parameters.AddWithValue("@RefreshToken", refreshToken);
                     command.Parameters.AddWithValue("@ExpirationDate", expirationDate);
                     command.Parameters.AddWithValue("@CreatedByIp", createdByIp);
@@ -79,5 +79,74 @@ namespace DVLD.Infrastructure.Repository
                 }
             }
         }
+
+        public async Task<bool> RevokeRefreshToken(string token)
+        {
+
+            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (SqlCommand command = new SqlCommand("SP_RevokeRefreshToken", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add the input parameter
+                    command.Parameters.Add(new SqlParameter("@RefreshToken", SqlDbType.NVarChar, 100)
+                    {
+                        Value = token
+                    });
+
+                    // Execute the procedure
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                    // If rows are affected, the operation was successful
+                    return rowsAffected > 0;
+                }
+            }
+
+        }
+
+        public async Task<(int UserId, DateTime? ExpireTime)> GetRefreshTokenDetailsAsync(string token)
+        {
+            using (var connection = new SqlConnection(DbSettings._connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand("SP_GetUserIdLinkedToRefreshToken", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add input parameter
+                    command.Parameters.Add(new SqlParameter("@RefreshToken", SqlDbType.NVarChar, 100)
+                    {
+                        Value = token
+                    });
+
+                    // Add output parameters
+                    var userIdParam = new SqlParameter("@UserId", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(userIdParam);
+
+                    var expireTimeParam = new SqlParameter("@ExpireTime", SqlDbType.DateTime)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(expireTimeParam);
+
+                    // Execute the procedure
+                    await command.ExecuteNonQueryAsync();
+
+                    // Retrieve output values
+                    int userId = (int)userIdParam.Value;
+                    DateTime? expireTime = expireTimeParam.Value == DBNull.Value ? (DateTime?)null : (DateTime)expireTimeParam.Value;
+
+                    return (userId, expireTime);
+                }
+            }
+        }
+
     }
 }

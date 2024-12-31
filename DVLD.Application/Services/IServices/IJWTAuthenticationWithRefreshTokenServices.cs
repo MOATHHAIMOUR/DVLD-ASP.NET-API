@@ -7,7 +7,7 @@ namespace DVLD.Application.Services.IServices
     {
         public Task<Result<AuthenticationResponse>> AuthenticateUser(string userId, string password);
 
-        //public Task<string> GenerateRefreshToken(string ipAddr, string userId);
+        public Task<Result<AuthenticationResponse>> RefreshTokenAsync(string token);
 
     }
 }

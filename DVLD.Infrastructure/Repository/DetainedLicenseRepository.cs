@@ -25,19 +25,23 @@ namespace DVLD.Infrastructure.Repository
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
-                    // Add parameters
+                    // Add input parameters
                     command.Parameters.AddWithValue("@LicenseId", entity.LicenseId);
-                    command.Parameters.AddWithValue("@DetainDate", entity.DetainDate);
                     command.Parameters.AddWithValue("@FineFees", entity.FineFees ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@CreatedByUserId", entity.CreatedByUserId);
-                    command.Parameters.AddWithValue("@IsReleased", entity.IsReleased);
-                    command.Parameters.AddWithValue("@ReleaseDate", entity.ReleaseDate ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@ReleasedByUserId", entity.ReleasedByUserId ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@ReleaseApplicationId", entity.ReleaseApplicationId ?? (object)DBNull.Value);
 
-                    // Execute and retrieve the new DetainId
-                    var newId = await command.ExecuteScalarAsync();
-                    return Convert.ToInt32(newId);
+                    // Add output parameter
+                    var detainIdParameter = new SqlParameter("@DetainId", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(detainIdParameter);
+
+                    // Execute the command
+                    await command.ExecuteNonQueryAsync();
+
+                    // Retrieve the output parameter value
+                    return (int)detainIdParameter.Value;
                 }
             }
         }
@@ -162,7 +166,6 @@ namespace DVLD.Infrastructure.Repository
 
                     // Add input parameters
                     command.Parameters.AddWithValue("@LicenseId", licenseId);
-                    command.Parameters.AddWithValue("@DetainDate", detainDate);
                     command.Parameters.AddWithValue("@ReleasedByUserId", releasedByUserId);
 
                     // Add output parameter
@@ -182,6 +185,36 @@ namespace DVLD.Infrastructure.Repository
                     int releaseApplicationId = releaseApplicationIdParam.Value != DBNull.Value ? (int)releaseApplicationIdParam.Value : 0;
 
                     return releaseApplicationId;
+                }
+            }
+        }
+
+        public async Task<bool> IsLicenseDetain(int licenseId)
+        {
+            using (SqlConnection connection = new SqlConnection(DbSettings._connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (SqlCommand command = new SqlCommand("SP_IsLicenseDetain", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    // Add input parameter
+                    command.Parameters.AddWithValue("@LicenseId", licenseId);
+
+                    // Add a return parameter to capture the RETURN value of the stored procedure
+                    SqlParameter returnParameter = new SqlParameter();
+                    returnParameter.Direction = ParameterDirection.ReturnValue;
+                    command.Parameters.Add(returnParameter);
+
+                    // Execute the command
+                    await command.ExecuteNonQueryAsync();
+
+                    // Retrieve the return value
+                    int returnValue = (int)returnParameter.Value;
+
+                    // Return true if 1, false otherwise
+                    return returnValue == 1;
                 }
             }
         }

@@ -13,23 +13,23 @@ namespace DVLD.Application.Services
     public class InternationalLicenseServices : IInternationalLicenseServices
     {
         private readonly IInternationalLicenseRepository _internationalLicenseRepository;
+        private readonly ILicenseRepository _licenseRepository;
         private readonly IDBViewsRepository _dBViewsRepository;
 
-        public InternationalLicenseServices(IInternationalLicenseRepository internationalLicenseRepository, IDBViewsRepository dBViewsRepository)
+        public InternationalLicenseServices(IInternationalLicenseRepository internationalLicenseRepository, ILicenseRepository licenseRepository, IDBViewsRepository dBViewsRepository)
         {
             _internationalLicenseRepository = internationalLicenseRepository;
+            _licenseRepository = licenseRepository;
             _dBViewsRepository = dBViewsRepository;
         }
 
         public async Task<Result<(int ApplicationId, int InternationalLicenseId)>> AddNewInternationalLicenseAsync(InternationalLicense internationalLicense)
         {
-            // Check if the driver has a local driving license
-            var (isValid, licenseId) = await _internationalLicenseRepository.CheckDriverHasOrdinaryLocalDrivingLicenseAsync(internationalLicense.DriverId);
+            // Check if the provided license is an ordinery 
+            LicenseDetailsView licenseDetailsView = (await _dBViewsRepository.GetLicenseInfo(null, internationalLicense.IssuedUsingLocalLicenseId, null))!;
 
-            if (!isValid)
-                return Result<(int ApplicationId, int InternationalLicenseId)>.Failure(Error.ValidationError("Driver does not have an Ordinary Local Driving License to create an International License"));
-
-            LicenseDetailsView licenseDetailsView = (await _dBViewsRepository.GetLicenseInfo(null, licenseId, null))!;
+            if (licenseDetailsView.LicenseClassId != Domain.Enums.EnumLicenseClass.OrdinaryDrivingLicense)
+                return Result<(int ApplicationId, int InternationalLicenseId)>.Failure(Error.ValidationError("Local License must be of class Ordinery"));
 
             // Check if the driver already has an international license
             bool hasInternationalLicense = await _internationalLicenseRepository.HasInternationalLicenseAsync(licenseDetailsView.DriverId);
@@ -46,6 +46,7 @@ namespace DVLD.Application.Services
 
             if (licenseDetailsView.ExpirationDate < DateTime.UtcNow)
                 return Result<(int ApplicationId, int InternationalLicenseId)>.Failure(Error.ValidationError("Applicant's Ordinary Local License is expired"));
+
 
             // Add the international license and get the IDs
             var (applicationId, internationalLicenseId) = await _internationalLicenseRepository.AddInternationalLicenseAsync(

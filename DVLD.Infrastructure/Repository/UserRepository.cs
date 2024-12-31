@@ -150,24 +150,33 @@ namespace DVLD.Infrastructure.Repository
         {
             using (var connection = new SqlConnection(DbSettings._connectionString))
             {
+                await connection.OpenAsync();
+
                 using (var command = new SqlCommand(storedProcedure, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
 
-                    // Add parameter dynamically
-                    command.Parameters.AddWithValue($"@{propertyName}", value);
+                    // Add parameter to the command
+                    command.Parameters.AddWithValue(propertyName, int.TryParse(value, out int intValue) ? intValue : throw new ArgumentException("Invalid parameter value"));
 
-                    // Open the connection
-                    await connection.OpenAsync();
+                    // Execute the command and get the return value
+                    var returnValue = new SqlParameter
+                    {
+                        ParameterName = "@ReturnValue",
+                        SqlDbType = SqlDbType.Int,
+                        Direction = ParameterDirection.ReturnValue
+                    };
 
-                    // Execute the command and retrieve the result
-                    var result = await command.ExecuteScalarAsync();
+                    command.Parameters.Add(returnValue);
 
-                    // Return true if the result is 1, false otherwise
-                    return Convert.ToInt32(result) == 1;
+                    await command.ExecuteNonQueryAsync();
+
+                    // Retrieve the return value
+                    return (int)returnValue.Value == 1;
                 }
             }
         }
+
         public async Task<bool> UpdateAsync(string storedProcedure, User entity)
         {
             using (var connection = new SqlConnection(DbSettings._connectionString))
@@ -178,7 +187,6 @@ namespace DVLD.Infrastructure.Repository
 
                     // Add parameters to match the stored procedure
                     command.Parameters.AddWithValue("@UserId", entity.UserId);
-                    command.Parameters.AddWithValue("@PersonId", entity.PersonId);
                     command.Parameters.AddWithValue("@UserName", entity.UserName);
                     command.Parameters.AddWithValue("@Password", (object?)entity.Password ?? DBNull.Value);
                     command.Parameters.AddWithValue("@IsActive", entity.IsActive);

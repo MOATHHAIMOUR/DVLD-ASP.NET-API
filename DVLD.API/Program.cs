@@ -32,12 +32,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JWT")["SecretKey"]!)),
         //As we specified to validate Issuer and Audience, we must also specify the details of Audience and Issuer to validate the incoming token's issuer and audience against these details.
         ValidAudience = builder.Configuration.GetSection("JWT")["Audience"],
-        ValidIssuer = builder.Configuration.GetSection("JWT")["Issuer"]
+        ValidIssuer = builder.Configuration.GetSection("JWT")["Issuer"],
+        ClockSkew = TimeSpan.Zero
+
     };
 });
+
 builder.Services.AddAuthorization();
-
-
 
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 
@@ -59,15 +60,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>
     {
-        builder.AllowAnyOrigin()
+        builder.WithOrigins("http://localhost:5174") // Replace with your frontend's origin
                .AllowAnyHeader()
-               .AllowAnyMethod();
+               .AllowAnyMethod()
+               .AllowCredentials(); // Important for including cookies or tokens
     });
 });
-
-
-
-
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

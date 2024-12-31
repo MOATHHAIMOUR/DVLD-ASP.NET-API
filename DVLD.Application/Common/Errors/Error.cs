@@ -15,6 +15,7 @@
 
 
 
+
         public Error(string code, string message)
         {
             _code = code;

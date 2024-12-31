@@ -27,7 +27,13 @@ namespace DVLD.Application.Services
                 return Result<int>.Failure(Error.RecoredNotFound("License is not found"));
 
             if (!license.IsActive)
-                return Result<int>.Failure(Error.RecoredNotFound("License is not active can't detain it"));
+                return Result<int>.Failure(Error.ValidationError("License is not active can't detain it"));
+
+            bool isLicenseDetain = await _detainedLicenseRepository.IsLicenseDetain(detainedLicense.LicenseId)
+                ;
+            if (isLicenseDetain)
+                return Result<int>.Failure(Error.ValidationError("License is already detained"));
+
 
             int insertedDetainId = await _detainedLicenseRepository.AddAsync(DetainLicenseStoredProcedures.SP_DetainLocalDrivingLicense, detainedLicense);
 
@@ -41,8 +47,13 @@ namespace DVLD.Application.Services
             if (license == null)
                 return Result<int>.Failure(Error.RecoredNotFound("License is not found"));
 
-            if (!license.IsActive)
-                return Result<int>.Failure(Error.RecoredNotFound("License is not active can't detain it"));
+
+            bool isLicenseDetain = await _detainedLicenseRepository.IsLicenseDetain(licenseReleaseDTO.LicenseId);
+
+            if (!isLicenseDetain)
+                return Result<int>.Failure(Error.RecoredNotFound("License is not Detain"));
+
+
 
             int releaseApplicationId = await _detainedLicenseRepository.ReleaseDetainLocalDrivingLicenseAsync(licenseReleaseDTO.LicenseId, licenseReleaseDTO.ReleasedDate, licenseReleaseDTO.ReleasedByUserId);
 

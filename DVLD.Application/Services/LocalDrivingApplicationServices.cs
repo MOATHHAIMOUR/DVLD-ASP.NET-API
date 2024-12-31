@@ -41,8 +41,9 @@ namespace DVLD.Application.Services
             }
 
             // Check if the person already has an active local driving license application
-            bool hasActiveApplication = await _localDrivingApplicationRepository.IsApplicantHasAcActiveApplicationPerApplicationType(
-                localDrivingLicenseApplication.Application.ApplicantPersonId,
+            bool hasActiveApplication = await _localDrivingApplicationRepository.IsApplicantHasAcActiveLocalDrivingApplication(
+                localDrivingLicenseApplication.Application.ApplicantPersonId
+                ,
                 (int)localDrivingLicenseApplication.LicenseClassId
             );
 
@@ -89,14 +90,13 @@ namespace DVLD.Application.Services
         }
 
 
-        public async Task<Result<string>> AddLicensesAsync(License license)
+        public async Task<Result<string>> AddLicensesForFirstTimeAsync(License license)
         {
             bool isApplicantPassAllTests = await _testRepository.IsApplicantPassAllTests(TestStoredProcedures.SP_IsApplicantPassAllTests, license.ApplicationId);
 
 
-
             if (!isApplicantPassAllTests)
-                return Result<string>.Failure(Error.ValidationError("Isuuing Licenses Require Passing All Tests"));
+                return Result<string>.Failure(Error.ValidationError("Applicant dose not pass all tests"));
 
             int insertedId = await _licenseRepository.AddAsync(LicensesStoredProcedure.SP_AddNewLocalLicense, license);
 
@@ -133,7 +133,7 @@ namespace DVLD.Application.Services
             throw new NotImplementedException();
         }
 
-        public async Task<Result<RenewLocalLicenseResultDTO>> RenewLocalDrivingLicenseAsync(int licenseId, int createdByUserId, DateTime expirationDate)
+        public async Task<Result<RenewLocalLicenseResultDTO>> RenewLocalDrivingLicenseAsync(int licenseId, int createdByUserId)
         {
             LicenseDetailsView? license = await _dBViewsRepository.GetLicenseInfo(null, licenseId, null);
 
@@ -153,7 +153,7 @@ namespace DVLD.Application.Services
                 return Result<RenewLocalLicenseResultDTO>.Failure(Error.ValidationError("License is not Expired can't renew it"));
 
 
-            (int ApplicationId, int RenewLicenseId) = await _localDrivingApplicationRepository.RenewLocalDrivingLicenseAsync(licenseId, createdByUserId, expirationDate);
+            (int ApplicationId, int RenewLicenseId) = await _localDrivingApplicationRepository.RenewLocalDrivingLicenseAsync(licenseId, createdByUserId);
 
             return Result<RenewLocalLicenseResultDTO>.Success(new RenewLocalLicenseResultDTO
             {

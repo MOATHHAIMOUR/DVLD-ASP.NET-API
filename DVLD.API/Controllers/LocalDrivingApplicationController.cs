@@ -43,7 +43,7 @@ namespace DVLD.API.Controllers
         }
 
 
-        [HttpPost(Router.LocalDrivingApplicationRouting.AddNewLocalLicenses)]
+        [HttpPost(Router.LocalDrivingApplicationRouting.AddNewLocalLicense)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse<string>>> AddNewLocalLicenses([FromBody] AddLocalLicensesDTO AddLocalLicensesDTO)
         {
@@ -90,17 +90,6 @@ namespace DVLD.API.Controllers
 
 
 
-
-        [HttpPost(Router.LocalDrivingApplicationRouting.DetainLocalDrivingLicense)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-
-        public async Task<ActionResult<ApiResponse<LicenseDetailsView>>> DetainLocalDrivingLicense([FromQuery] int LicenseId, [FromQuery] int CreatedByUserId, [FromQuery] DateTime ExpirationDate)
-        {
-            var response = await _mediator.Send(new RenewLocalDrivingLicenseCommand(LicenseId, CreatedByUserId, ExpirationDate));
-
-            return NewResult(response);
-        }
 
 
     }
